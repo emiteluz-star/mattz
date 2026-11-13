@@ -6,6 +6,7 @@ O que funciona sem internet
 - As imagens são processadas no próprio aparelho.
 
 A aba Texto & retoque e a leitura automática foram ocultadas nesta versão.
+No iPad, use os botões redondos C, V, Q e Cortar na lateral. Toque num painel marcado e depois na lixeira para apagá-lo. Os pontos de redimensionamento dos painéis ficam maiores na tela de toque.
 
 IMPORTANTE: prepare o app uma vez antes de ficar sem internet
 O Safari só instala o cache offline de um site publicado em HTTPS. Esta pasta está pronta para publicar em qualquer hospedagem de arquivos estáticos com HTTPS.

@@ -34,6 +34,15 @@
   .open-help{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#fff5d8;border-bottom:1px solid #f0d98f;color:#55420c;font-size:13px;line-height:1.45}.open-help-copy{flex:1}.open-help-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}.open-help[hidden]{display:none!important}
   .offline-setup{display:flex;align-items:center;gap:10px;padding:9px 16px;background:#eaf2ff;border-bottom:1px solid #d1e0ff;color:#203c77;font-size:12px;line-height:1.4}.offline-setup[hidden]{display:none!important}.offline-setup-text{flex:1}.offline-setup-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}
   #quickTabSwitch,.tab-strip{display:none!important}
+  .touch-shortcuts{position:fixed;top:50%;right:314px;transform:translateY(-50%);z-index:20;display:none;grid-template-columns:1fr;gap:8px;pointer-events:none}
+  .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:manipulation;pointer-events:auto;-webkit-tap-highlight-color:transparent;user-select:none}
+  .touch-bubble.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .touch-bubble:disabled{opacity:.4;box-shadow:none}
+  .touch-bubble.trash{margin-top:8px;color:#c43b42}
+  .touch-bubble.trash:disabled{color:#929aa7}
+  @media(max-width:1050px){.touch-shortcuts{right:275px}}
+  @media(max-width:790px){.touch-shortcuts{right:max(8px,env(safe-area-inset-right))}}
+  @media(hover:none) and (pointer:coarse){.touch-shortcuts{display:grid}}
   .toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,12px);opacity:0;transition:.2s;z-index:10;background:#20252e;color:#fff;border-radius:9px;padding:10px 14px;box-shadow:var(--shadow);font-size:12px;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
   input[type=file]{display:none}
   @media(max-width:1050px){main{grid-template-columns:205px minmax(280px,1fr) 255px;gap:10px;padding:10px}.canvas-toolbar{flex-wrap:wrap}.tool-label{display:none}}
@@ -82,6 +91,10 @@
   :root[data-theme="dark"] .canvas-hint{background:rgba(12,16,23,.9)}
   :root[data-theme="dark"] .open-help{background:#403719;border-color:#665728;color:#f7e9b4}
   :root[data-theme="dark"] .offline-setup{background:#202f49;border-color:#344c70;color:#d7e5ff}
+  :root[data-theme="dark"] .touch-bubble{background:rgba(37,45,57,.97);border-color:#596579;color:#e5eaf2}
+  :root[data-theme="dark"] .touch-bubble.active{background:var(--blue);border-color:var(--blue);color:#121923}
+  :root[data-theme="dark"] .touch-bubble.trash{color:#ff858b}
+  :root[data-theme="dark"] .touch-bubble.trash:disabled{color:#8793a3}
   .quad-draft-line{fill:rgba(34,169,132,.12);stroke:#22a984;stroke-width:2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;pointer-events:none}.quad-draft-point{fill:#fff;stroke:#138867;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none}.vertex-label{font-size:12px;font-weight:800;fill:#fff;stroke:rgba(20,40,90,.85);stroke-width:3px;paint-order:stroke;pointer-events:none}.vertex-handle{cursor:move}
   :root[data-theme="dark"] .quad-draft-point{fill:#202733}
   .image-wrap svg.pan-mode{touch-action:pan-x pan-y;cursor:grab}.image-wrap svg.pan-mode:active{cursor:grabbing}
@@ -119,6 +132,14 @@
   </header>
   <aside class="open-help" id="localFileHelp" hidden role="status"><div class="open-help-copy"><strong>Esta é uma prévia do arquivo no iPad.</strong> O Telegram/Arquivos pode exibir a página, mas bloquear a seleção de imagens. No Windows, abra <b>Iniciar Quadro na rede.cmd</b>; no iPad, digite no Safari o endereço que aparecer (os dois aparelhos precisam estar no mesmo Wi-Fi). Não abra o HTML anexado para usar o app.</div><button class="open-help-close" id="closeLocalFileHelp" type="button" aria-label="Fechar aviso">×</button></aside>
   <aside class="offline-setup" id="offlineSetup" role="status"><div class="offline-setup-text" id="offlineSetupText">Preparando o modo offline. Abra esta página uma vez com internet e aguarde a confirmação; depois use Safari → Compartilhar → Adicionar à Tela de Início.</div><button class="offline-setup-close" id="closeOfflineSetup" type="button" aria-label="Fechar aviso">×</button></aside>
+  <nav class="touch-shortcuts" id="touchShortcuts" aria-label="Ferramentas rápidas para toque">
+    <button class="touch-bubble" id="touchPanelBtn" type="button" title="Painel livre · C" aria-label="Painel livre, atalho C" aria-pressed="true">C</button>
+    <button class="touch-bubble" id="touchBandBtn" type="button" title="Faixa de largura total · V" aria-label="Faixa de largura total, atalho V" aria-pressed="false">V</button>
+    <button class="touch-bubble" id="touchPolygonBtn" type="button" title="Polígono · Q" aria-label="Polígono, atalho Q" aria-pressed="false">Q</button>
+    <button class="touch-bubble" id="touchCropBtn" type="button" title="Cortar imagem" aria-label="Cortar imagem">✂</button>
+    <button class="touch-bubble" id="touchPanBtn" type="button" title="Mover a tela" aria-label="Mover a tela" aria-pressed="false">✋</button>
+    <button class="touch-bubble trash" id="touchTrashBtn" type="button" title="Apagar o painel selecionado" aria-label="Apagar o painel selecionado" disabled>🗑</button>
+  </nav>
   <main>
     <aside class="panel queue">
       <div class="panel-head"><span class="panel-title">Páginas</span><span class="counter" id="pageCounter">0</span></div>
@@ -532,7 +553,7 @@
   }
   function renderOverlay(){
     const page=current();if(!page||!page.width)return;
-    const coarsePointer=!!window.matchMedia?.('(pointer:coarse)').matches,resizeHandleRadius=coarsePointer?10:6,vertexHandleRadius=coarsePointer?12:7;
+    const coarsePointer=!!window.matchMedia?.('(pointer:coarse)').matches,viewScale=(els.overlay.getBoundingClientRect().width/page.width)||1,touchHandleRadius=Math.min(100,Math.max(18,16/viewScale)),resizeHandleRadius=coarsePointer?touchHandleRadius:6,vertexHandleRadius=coarsePointer?touchHandleRadius:7;
     const chunks=[],letters='ABCDEFGH',splitMarks=[...(state.splitMarks.get(page.id)||[])].sort((a,b)=>a-b);els.overlay.classList.toggle('split-marking',state.activeTab==='cuts'&&state.mode==='splitmark');
     if(state.activeTab==='cuts')page.boxes.forEach((box,i)=>{
       const selected=box.id===state.selectedId,markId=escSvg(box.id);
@@ -1202,6 +1223,7 @@
     const page=current(),boxes=page?page.boxes:[];
     els.panelCounter.textContent=`${boxes.length} ${boxes.length===1?'painel':'painéis'}`;
     els.undoBtn.disabled=!boxes.length||state.busy;els.deleteSelected.disabled=!state.selectedId||state.busy;els.copyLayout.disabled=!boxes.length||state.pages.length<2||state.busy;
+    updateTouchActionState();
     if(!boxes.length){els.panelList.innerHTML='<div class="no-panels">Ainda não há marcações.<br>Arraste na página para criar a primeira.</div>';return}
     els.panelList.innerHTML='';
     boxes.forEach((box,index)=>{
@@ -1230,6 +1252,14 @@
     els.downloadRollTop.hidden=!current()?.isRoll;els.downloadRollTop.disabled=state.busy||state.rolling;
     const hasEdits=allSources().some(hasImageChanges),downloadAll=$('downloadAllEditsTop');downloadAll.hidden=!hasEdits;downloadAll.disabled=state.busy;
     updateCropControls();renderPanels();renderTextList();updateCanvasHint();
+  }
+  function updateTouchActionState(){
+    const modes=[['touchPanelBtn','rect'],['touchBandBtn','band'],['touchPolygonBtn','quad']];
+    for(const[id,mode]of modes){const button=$(id);button.classList.toggle('active',state.mode===mode);button.setAttribute('aria-pressed',String(state.mode===mode))}
+    const crop=$('touchCropBtn'),pan=$('touchPanBtn'),trash=$('touchTrashBtn');
+    crop.classList.toggle('active',state.mode==='crop');crop.disabled=$('cropImageMode').disabled;
+    pan.classList.toggle('active',state.mode==='pan');pan.setAttribute('aria-pressed',String(state.mode==='pan'));pan.disabled=!current()||state.busy;
+    trash.disabled=!state.selectedId||state.busy;
   }
   function releasePageResources(page){
     const urls=new Set([page.url,page.editUrl,page.cropSnapshot?.url,page.cropSnapshot?.editUrl].filter(Boolean));
@@ -1536,13 +1566,20 @@
     $('drawMode').classList.toggle('active',rect);$('lineMode').classList.toggle('active',band);$('quadMode').classList.toggle('active',quad);
     $('panMode').classList.toggle('active',pan);$('panMode').setAttribute('aria-pressed',String(pan));els.overlay.classList.toggle('pan-mode',pan);
     $('rectModeCard').classList.toggle('selected',rect);$('bandModeCard').classList.toggle('selected',band);$('quadModeCard').classList.toggle('selected',quad);
-    updateCropControls();updateCanvasHint();renderOverlay();updateCounts();
+    updateCropControls();updateTouchActionState();updateCanvasHint();renderOverlay();updateCounts();
   }
   function togglePanMode(){if(state.mode==='pan')setMode(state.panReturnMode||'rect');else{state.panReturnMode=state.mode;setMode('pan')}}
 
   function openCutTool(){setMode('rect');setActiveTab('cuts')}
   els.cutTabButton.addEventListener('click',()=>setActiveTab('cuts'));els.textTabButton.addEventListener('click',()=>setActiveTab('text'));
   $('quickTabSwitch').addEventListener('click',()=>state.activeTab==='cuts'?setActiveTab('text'):openCutTool());
+  function chooseTouchMode(mode){setActiveTab('cuts');setMode(mode)}
+  $('touchPanelBtn').addEventListener('click',()=>chooseTouchMode('rect'));
+  $('touchBandBtn').addEventListener('click',()=>chooseTouchMode('band'));
+  $('touchPolygonBtn').addEventListener('click',()=>chooseTouchMode('quad'));
+  $('touchCropBtn').addEventListener('click',()=>$('cropImageMode').click());
+  $('touchPanBtn').addEventListener('click',togglePanMode);
+  $('touchTrashBtn').addEventListener('click',()=>{if(state.selectedId)removeBox(state.selectedId)});
   function handleKeyboardShortcuts(event){
     if(shortcutCaptureId){
       if(event.key==='Escape'&&shortcutCaptureId!=='cancel'){event.preventDefault();event.stopImmediatePropagation();endShortcutCapture();return}
