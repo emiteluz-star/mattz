@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quadro-manual-offline-v3';
+const CACHE_NAME = 'quadro-manual-offline-v4';
 const APP_BASE = new URL('./', self.registration.scope);
 const APP_INDEX = new URL('index.html', APP_BASE).href;
 const APP_FILES = [

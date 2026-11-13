@@ -35,7 +35,8 @@
   .offline-setup{display:flex;align-items:center;gap:10px;padding:9px 16px;background:#eaf2ff;border-bottom:1px solid #d1e0ff;color:#203c77;font-size:12px;line-height:1.4}.offline-setup[hidden]{display:none!important}.offline-setup-text{flex:1}.offline-setup-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}
   #quickTabSwitch,.tab-strip{display:none!important}
   .touch-shortcuts{position:fixed;top:var(--touch-shortcuts-top,50%);left:var(--touch-shortcuts-left,8px);right:auto;transform:translateY(-50%);z-index:20;display:none;grid-template-columns:1fr;gap:8px;pointer-events:none}
-  .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:manipulation;pointer-events:auto;-webkit-tap-highlight-color:transparent;user-select:none}
+  .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:none;pointer-events:auto;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;cursor:grab}
+  .touch-shortcuts.dragging .touch-bubble{cursor:grabbing;box-shadow:0 7px 20px rgba(20,35,60,.3)}
   .touch-bubble.active{background:var(--blue);border-color:var(--blue);color:#fff}
   .touch-bubble:disabled{opacity:.4;box-shadow:none}
   .touch-bubble.trash{margin-top:8px;color:#c43b42}
@@ -1259,14 +1260,52 @@
     pan.classList.toggle('active',state.mode==='pan');pan.setAttribute('aria-pressed',String(state.mode==='pan'));pan.disabled=!current()||state.busy;
     trash.disabled=!state.selectedId||state.busy;
   }
+  const touchShortcutsPositionKey='quadro-touch-shortcuts-position-v1';
+  let savedTouchShortcutsPosition=null,touchShortcutsDrag=null,suppressTouchShortcutsClick=false;
+  try{const saved=JSON.parse(localStorage.getItem(touchShortcutsPositionKey)||'null');if(saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y))savedTouchShortcutsPosition={x:saved.x,y:saved.y}}catch{}
+  function setTouchShortcutsPosition(x,y){
+    const bar=$('touchShortcuts');if(!bar)return;
+    const rect=bar.getBoundingClientRect(),width=rect.width||54,height=rect.height||54;
+    const safeX=Math.max(8,Math.min(x,window.innerWidth-width-8));
+    const safeY=Math.max(height/2+8,Math.min(y,window.innerHeight-height/2-8));
+    bar.style.setProperty('--touch-shortcuts-left',`${Math.round(safeX)}px`);
+    bar.style.setProperty('--touch-shortcuts-top',`${Math.round(safeY)}px`);
+    return{x:safeX,y:safeY};
+  }
   function positionTouchShortcuts(){
     const bar=$('touchShortcuts'),panel=document.querySelector('.canvas-panel');if(!bar||!panel)return;
+    if(savedTouchShortcutsPosition){savedTouchShortcutsPosition=setTouchShortcutsPosition(savedTouchShortcutsPosition.x,savedTouchShortcutsPosition.y);return}
     const panelRect=panel.getBoundingClientRect(),canvasRect=els.canvasScroll.getBoundingClientRect();
-    const left=Math.max(8,Math.min(panelRect.left+8,window.innerWidth-62));
-    const top=Math.max(190,Math.min(canvasRect.top+canvasRect.height/2,window.innerHeight-190));
-    bar.style.setProperty('--touch-shortcuts-left',`${Math.round(left)}px`);
-    bar.style.setProperty('--touch-shortcuts-top',`${Math.round(top)}px`);
+    setTouchShortcutsPosition(panelRect.left+8,canvasRect.top+canvasRect.height/2);
   }
+  function beginTouchShortcutsDrag(event){
+    const button=event.target.closest('.touch-bubble');if(!button||event.button!==undefined&&event.button!==0)return;
+    const bar=$('touchShortcuts'),rect=bar.getBoundingClientRect();if(!rect.width||!rect.height)return;
+    touchShortcutsDrag={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,left:rect.left,centerY:rect.top+rect.height/2,x:event.clientX,y:event.clientY,active:false,timer:0};
+    touchShortcutsDrag.timer=setTimeout(()=>{
+      if(!touchShortcutsDrag)return;
+      touchShortcutsDrag.active=true;bar.classList.add('dragging');
+      suppressTouchShortcutsClick=true;setTimeout(()=>{suppressTouchShortcutsClick=false},700);
+      setTouchShortcutsPosition(touchShortcutsDrag.left+touchShortcutsDrag.x-touchShortcutsDrag.startX,touchShortcutsDrag.centerY+touchShortcutsDrag.y-touchShortcutsDrag.startY);
+    },300);
+    try{button.setPointerCapture(event.pointerId)}catch{}
+  }
+  function moveTouchShortcutsDrag(event){
+    if(!touchShortcutsDrag||event.pointerId!==touchShortcutsDrag.pointerId)return;
+    touchShortcutsDrag.x=event.clientX;touchShortcutsDrag.y=event.clientY;
+    if(touchShortcutsDrag.active){event.preventDefault();setTouchShortcutsPosition(touchShortcutsDrag.left+event.clientX-touchShortcutsDrag.startX,touchShortcutsDrag.centerY+event.clientY-touchShortcutsDrag.startY)}
+  }
+  function endTouchShortcutsDrag(event){
+    if(!touchShortcutsDrag||event.pointerId!==touchShortcutsDrag.pointerId)return;
+    clearTimeout(touchShortcutsDrag.timer);const wasDragging=touchShortcutsDrag.active;
+    if(wasDragging){const rect=$('touchShortcuts').getBoundingClientRect();savedTouchShortcutsPosition=setTouchShortcutsPosition(rect.left,rect.top+rect.height/2);$('touchShortcuts').classList.remove('dragging');try{localStorage.setItem(touchShortcutsPositionKey,JSON.stringify(savedTouchShortcutsPosition))}catch{}}
+    touchShortcutsDrag=null;
+  }
+  $('touchShortcuts').addEventListener('pointerdown',beginTouchShortcutsDrag);
+  $('touchShortcuts').addEventListener('pointermove',moveTouchShortcutsDrag);
+  $('touchShortcuts').addEventListener('pointerup',endTouchShortcutsDrag);
+  $('touchShortcuts').addEventListener('pointercancel',endTouchShortcutsDrag);
+  $('touchShortcuts').addEventListener('click',event=>{if(suppressTouchShortcutsClick){event.preventDefault();event.stopImmediatePropagation()}},true);
   window.addEventListener('resize',positionTouchShortcuts,{passive:true});
   window.addEventListener('scroll',positionTouchShortcuts,true);
   if(window.ResizeObserver){const touchShortcutsObserver=new ResizeObserver(positionTouchShortcuts);touchShortcutsObserver.observe(document.querySelector('.canvas-panel'));touchShortcutsObserver.observe(document.querySelector('main'))}
