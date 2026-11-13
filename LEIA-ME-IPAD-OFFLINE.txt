@@ -1,0 +1,28 @@
+QUADRO — VERSÃO DE RECORTE MANUAL PARA IPAD
+
+O que funciona sem internet
+- Abrir o Quadro pelo ícone na Tela de Início.
+- Selecionar imagens no iPad, marcar painéis e exportar os recortes.
+- As imagens são processadas no próprio aparelho.
+
+A aba Texto & retoque e a leitura automática foram ocultadas nesta versão.
+
+IMPORTANTE: prepare o app uma vez antes de ficar sem internet
+O Safari só instala o cache offline de um site publicado em HTTPS. Esta pasta está pronta para publicar em qualquer hospedagem de arquivos estáticos com HTTPS.
+
+1. Publique todos os arquivos desta pasta juntos, sem mudar os nomes nem a estrutura.
+2. Com internet, abra o endereço HTTPS publicado no Safari do iPad.
+3. Aguarde a faixa azul confirmar “Quadro preparado para abrir sem internet”. Isso significa que a página e os ícones foram guardados no iPad.
+4. No Safari, toque em Compartilhar e escolha “Adicionar à Tela de Início”. Mantenha a opção de abrir como app ativada, se aparecer.
+5. Abra o ícone Quadro uma vez enquanto ainda estiver com internet.
+6. Depois, teste desligando Wi-Fi e dados móveis e abrindo novamente pelo ícone.
+
+Depois de instalado e preparado, o PC não precisa permanecer ligado. O app abre em uma janela própria pela Tela de Início.
+
+Arquivos usados para recortes são escolhidos no iPad e não são enviados para a hospedagem. Após recarregar ou reabrir, selecione novamente as mesmas imagens para recuperar as marcações salvas.
+
+Limitações
+- Esta é uma aplicação web instalada na Tela de Início, não um aplicativo nativo distribuído pela App Store.
+- A leitura automática de texto e as ferramentas de retoque por IA não estão disponíveis nesta edição offline.
+- A instalação inicial precisa de internet e de um endereço HTTPS. Abrir o HTML anexado no Telegram/Arquivos não instala o app nem prepara o cache offline.
+- Não apague os dados do Safari para o endereço publicado; isso remove o cache offline.

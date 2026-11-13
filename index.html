@@ -1,0 +1,1892 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f7f9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quadro">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<script>try{if(localStorage.getItem('quadro-theme')==='dark')document.documentElement.dataset.theme='dark'}catch{}</script>
+<title>Quadro — recortador de manhwa</title>
+<style>
+  :root{color-scheme:light;--ink:#20252e;--muted:#77808e;--line:#e5e8ed;--paper:#fff;--wash:#f6f7f9;--blue:#3266e9;--blue-soft:#edf2ff;--mint:#22a984;--shadow:0 10px 32px rgba(30,43,65,.08)}
+  *{box-sizing:border-box}[hidden]{display:none!important}
+  body{margin:0;background:var(--wash);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-width:320px}
+  button,input{font:inherit}button{cursor:pointer}
+  .app{min-height:100vh;display:flex;flex-direction:column}
+  header{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px;position:sticky;top:0;z-index:5}
+  .brand{display:flex;align-items:center;gap:11px;min-width:190px}.logo{width:34px;height:34px;border-radius:11px;background:#20252e;color:#fff;display:grid;place-items:center;font-weight:800;font-size:17px;letter-spacing:-1px}.brand-name{font-size:16px;font-weight:750;letter-spacing:-.4px}.brand-sub{font-size:11px;color:var(--muted);margin-top:1px}
+  .top-status{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px}.status-dot{width:7px;height:7px;background:var(--mint);border-radius:50%}
+  .top-actions{display:flex;align-items:center;gap:9px}
+  .shortcuts-dialog{width:min(610px,calc(100vw - 28px));max-height:86vh;padding:0;border:1px solid var(--line);border-radius:15px;background:var(--paper);color:var(--ink);box-shadow:0 24px 80px rgba(12,24,42,.28);overflow:auto}.shortcuts-dialog::backdrop{background:rgba(18,27,41,.56);backdrop-filter:blur(2px)}.shortcuts-head{padding:19px 21px 15px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.shortcuts-head h2{font-size:17px;margin:0}.shortcuts-head p{font-size:11px;color:var(--muted);margin:5px 0 0}.shortcuts-list{padding:7px 21px}.shortcut-row{min-height:53px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line)}.shortcut-row:last-child{border-bottom:0}.shortcut-name{font-size:12px;font-weight:700}.shortcut-description{font-size:10px;color:var(--muted);margin-top:2px}.shortcut-value{min-width:125px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px}.shortcut-value.listening{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}.shortcuts-foot{padding:13px 21px 17px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.shortcuts-foot span{font-size:10px;line-height:1.45;color:var(--muted)}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:650;transition:.15s ease;white-space:nowrap}.btn:hover{border-color:#c7ced9;background:#fafbfc}.btn:disabled{opacity:.42;cursor:not-allowed}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:#2758d4}.btn.ghost{border-color:transparent;background:transparent}.btn.small{padding:6px 8px;font-size:12px;border-radius:7px}.btn .ico{font-size:16px;line-height:1}
+  main{flex:1;min-height:0;display:grid;grid-template-columns:238px minmax(300px,1fr) 286px;gap:14px;padding:14px}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:13px;box-shadow:0 2px 8px rgba(30,43,65,.025);min-height:0}
+  .queue{display:flex;flex-direction:column;overflow:hidden}.panel-head{padding:15px 15px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-title{font-weight:750;font-size:13px}.counter{font-size:11px;color:#667080;background:#f0f2f5;border-radius:20px;padding:3px 8px}.queue-tools{padding:11px 12px;display:flex;gap:7px;border-bottom:1px solid #f0f1f4}.queue-tools .btn{flex:1}.split-tools{padding:10px 12px;border-bottom:1px solid #f0f1f4}.split-tools-title{font-size:11px;font-weight:700;margin-bottom:7px}.split-tools-row{display:flex;align-items:center;gap:6px}.split-tools-row .btn{flex:1}.split-tools-note{font-size:9px;line-height:1.4;color:var(--muted);margin:6px 0 0}.split-mark-actions{display:flex;gap:6px;margin-top:7px}.split-mark-actions .btn{flex:1}.split-download-btn{width:100%;margin-top:8px;font-size:11px}.file-list{padding:9px;overflow:auto;flex:1}.empty-queue{height:100%;min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:20px;font-size:12px}.empty-queue strong{color:#39414d;display:block;margin:8px 0 3px;font-size:13px}.empty-icon{width:42px;height:42px;border-radius:13px;background:#f2f4f7;display:grid;place-items:center;font-size:19px;color:#8b93a1}
+  .file-row{content-visibility:auto;contain-intrinsic-size:77px;display:grid;grid-template-columns:46px minmax(0,1fr) auto auto;align-items:center;gap:7px;padding:7px;border:1px solid transparent;border-radius:9px;cursor:pointer;margin-bottom:3px}.file-row:hover{background:#f7f8fa}.file-row.active{background:var(--blue-soft);border-color:#cfdbff}.thumb{width:46px;height:58px;background:#eef0f3;border-radius:5px;overflow:hidden;display:grid;place-items:center;color:#a0a7b1;font-size:11px}.thumb img{width:100%;height:100%;object-fit:cover}.file-copy{min-width:0}.file-name{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-meta{font-size:10px;color:var(--muted);margin-top:4px}.row-count{font-size:10px;color:#667080;background:#fff;border:1px solid var(--line);padding:2px 6px;border-radius:99px}
+  .canvas-panel{display:flex;flex-direction:column;overflow:hidden;min-height:460px}.canvas-toolbar{min-height:52px;padding:8px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.tool-group{display:flex;align-items:center;gap:5px}.tool-label{font-size:11px;color:var(--muted);margin-right:3px}.tool-btn{height:32px;border:1px solid transparent;background:transparent;color:#5e6774;border-radius:8px;padding:0 9px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:650}.tool-btn:hover{background:#f3f5f8}.tool-btn.active{background:var(--blue-soft);color:var(--blue);border-color:#dbe4ff}.zoom-readout{font-size:11px;color:var(--muted);min-width:38px;text-align:center}.canvas-scroll{position:relative;overflow:auto;flex:1;min-height:0;background-color:#eef0f3;background-image:radial-gradient(#dce0e6 1px,transparent 1px);background-size:16px 16px;display:flex;align-items:flex-start;justify-content:center;padding:24px}.welcome{width:min(100%,460px);min-height:310px;margin:auto;border:1px dashed #cbd2dc;border-radius:15px;background:rgba(255,255,255,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}.welcome-mark{width:58px;height:58px;border-radius:17px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-size:25px;margin-bottom:17px}.welcome h1{font-size:20px;letter-spacing:-.5px;margin:0 0 6px}.welcome p{font-size:13px;color:var(--muted);max-width:310px;margin:0 0 18px}.drop-note{font-size:11px;color:#929aa6;margin-top:12px}.image-wrap{position:relative;display:inline-block;flex:none;background:#fff;box-shadow:0 8px 25px rgba(29,38,54,.16);line-height:0}.image-wrap img{display:block;height:auto;max-width:none;user-select:none;-webkit-user-drag:none}.image-wrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:none}.image-wrap svg.split-marking{cursor:crosshair}.selection{fill:rgba(50,102,233,.13);stroke:#3266e9;stroke-width:2;vector-effect:non-scaling-stroke;cursor:move}.selection.selected{fill:rgba(50,102,233,.2);stroke:#1e4fcf;stroke-width:2.5}.selection-label{font-size:14px;font-weight:700;fill:#fff;stroke:rgba(20,40,90,.7);stroke-width:3px;paint-order:stroke;pointer-events:none}.handle{fill:#fff;stroke:#1e4fcf;stroke-width:2;vector-effect:non-scaling-stroke;cursor:nwse-resize}.draft{fill:rgba(34,169,132,.12);stroke:#22a984;stroke-width:2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;pointer-events:none}.split-cut-mark{stroke:#ef514b;stroke-width:3;stroke-dasharray:10 6;vector-effect:non-scaling-stroke;pointer-events:none}.split-cut-label{fill:#fff;stroke:rgba(32,37,46,.85);stroke-width:3px;paint-order:stroke;font-size:13px;font-weight:800;pointer-events:none}.crop-selection{fill:rgba(214,83,50,.12);stroke:#d65332;stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;pointer-events:none}.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(32,37,46,.83);color:#fff;border-radius:20px;padding:6px 10px;font-size:11px;white-space:nowrap;pointer-events:none}
+  .right{position:sticky;top:82px;align-self:start;max-height:calc(100vh - 96px);display:flex;flex-direction:column;overflow:hidden}.right-scroll{overflow:auto;flex:1}.section{padding:15px;border-bottom:1px solid var(--line)}.section:last-child{border-bottom:0}.section-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}.section-heading{font-size:12px;font-weight:750}.subtle{font-size:11px;color:var(--muted)}.how{color:var(--muted);font-size:11px;line-height:1.55;margin:0}.mode-card{border:1px solid var(--line);border-radius:9px;padding:10px;margin-top:8px;display:flex;gap:9px;align-items:flex-start;cursor:pointer}.mode-card.selected{border-color:#bdccff;background:#f8faff}.radio{width:15px;height:15px;border:1.5px solid #a6afbd;border-radius:50%;margin-top:1px;flex:none;position:relative}.mode-card.selected .radio{border-color:var(--blue)}.mode-card.selected .radio:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--blue)}.mode-title{font-size:11px;font-weight:700}.mode-desc{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4}.panel-list{display:flex;flex-direction:column;gap:6px}.panel-item{border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;align-items:center;gap:8px;background:#fff}.panel-item.active{border-color:#bdccff;background:#f8faff}.panel-number{width:24px;height:24px;border-radius:7px;background:#eff3ff;color:var(--blue);display:grid;place-items:center;font-weight:750;font-size:11px;flex:none}.panel-info{min-width:0;flex:1}.panel-info strong{display:block;font-size:11px}.panel-info span{font-size:10px;color:var(--muted)}.mini-action{border:0;background:transparent;color:#848d9b;padding:4px;border-radius:5px;font-size:14px}.mini-action:hover{background:#eef0f4;color:#38414e}.no-panels{border:1px dashed #d9dee6;border-radius:9px;text-align:center;padding:19px 10px;color:#9199a5;font-size:11px;line-height:1.5}
+  .batch-note{padding:10px;border-radius:8px;background:#f5f7fa;color:#677180;font-size:10px;line-height:1.5;margin-top:9px}.batch-note strong{color:#444d5b}.export-box{padding:14px;background:#fbfcfd;border:1px solid var(--line);border-radius:10px}.export-summary{display:flex;justify-content:space-between;color:#697383;font-size:11px;margin-bottom:10px}.export-summary strong{color:#252b35}.export-btn{width:100%;padding:11px}.progress{height:5px;border-radius:5px;background:#e8ebf0;overflow:hidden;margin:10px 0 5px;display:none}.progress-bar{height:100%;width:0;background:var(--mint);transition:width .15s}.footnote{font-size:10px;color:#9098a5;text-align:center;margin:8px 0 0}
+  .footerline{height:27px;display:flex;align-items:center;justify-content:space-between;padding:0 17px;color:#929aa7;font-size:10px}.footerline span{display:flex;align-items:center;gap:6px}
+  .open-help{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#fff5d8;border-bottom:1px solid #f0d98f;color:#55420c;font-size:13px;line-height:1.45}.open-help-copy{flex:1}.open-help-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}.open-help[hidden]{display:none!important}
+  .offline-setup{display:flex;align-items:center;gap:10px;padding:9px 16px;background:#eaf2ff;border-bottom:1px solid #d1e0ff;color:#203c77;font-size:12px;line-height:1.4}.offline-setup[hidden]{display:none!important}.offline-setup-text{flex:1}.offline-setup-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}
+  #quickTabSwitch,.tab-strip{display:none!important}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,12px);opacity:0;transition:.2s;z-index:10;background:#20252e;color:#fff;border-radius:9px;padding:10px 14px;box-shadow:var(--shadow);font-size:12px;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+  input[type=file]{display:none}
+  @media(max-width:1050px){main{grid-template-columns:205px minmax(280px,1fr) 255px;gap:10px;padding:10px}.canvas-toolbar{flex-wrap:wrap}.tool-label{display:none}}
+  @media(max-width:790px){header{padding:0 12px}.brand{min-width:0}.brand-sub,.top-status{display:none}main{grid-template-columns:1fr;grid-template-rows:auto minmax(48vh,1fr) auto}.queue{max-height:190px}.file-list{display:flex;overflow:auto;gap:5px}.empty-queue{min-height:95px}.file-row{min-width:190px;margin:0}.canvas-panel{min-height:50vh}.right{position:static;max-height:none}.right-scroll{display:grid;grid-template-columns:1fr 1fr}.section{border-right:1px solid var(--line)}.section:last-child{border-right:0}.footerline{display:none}}
+  @media(max-width:520px){.top-actions .btn span.label{display:none}.top-actions .btn{padding:8px 10px}.canvas-toolbar{justify-content:center}.canvas-scroll{padding:14px}.right-scroll{display:block}.section{border-right:0}}
+  .roll-image-list{display:block;line-height:0;overflow:hidden}.roll-image-list svg{display:block;max-width:none;overflow:hidden}
+  .tab-strip{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line);background:#fbfcfd}.tab-btn{flex:1;border:1px solid transparent;background:transparent;border-radius:8px;padding:8px 6px;color:#687383;font-size:11px;font-weight:700}.tab-btn.active{background:#fff;color:var(--blue);border-color:#dfe5ef;box-shadow:0 1px 3px rgba(20,30,50,.04)}.select{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px;color:var(--ink);font-size:12px}.ocr-list{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow:auto;margin-top:10px}.ocr-row{display:flex;align-items:flex-start;gap:8px;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:11px}.ocr-row.done{opacity:.55}.ocr-row input{margin:2px 0 0;accent-color:var(--blue)}.ocr-copy{min-width:0;flex:1;overflow-wrap:anywhere}.ocr-copy strong{display:block;font-size:11px;font-weight:600;color:#303744}.ocr-copy span{color:#929aa7;font-size:10px}.ocr-box{fill:rgba(255,190,45,.13);stroke:#efaa18;stroke-width:2;vector-effect:non-scaling-stroke;cursor:pointer}.ocr-box.selected{fill:rgba(255,160,20,.24);stroke:#e08000;stroke-width:2.5}.brush-draft{fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.58;pointer-events:none}.brush-row{display:flex;gap:6px;margin-top:8px}.brush-row .btn{flex:1;min-width:0;font-size:10px;padding:7px 5px}.brush-row .btn.active{background:var(--blue-soft);border-color:#cddaff;color:var(--blue)}.swatch{width:20px;height:20px;border:1px solid #cbd1da;border-radius:6px;background:#fff;display:inline-block;vertical-align:middle;margin-left:5px}.range{width:100%;accent-color:var(--blue)}.notice{font-size:10px;line-height:1.5;color:#7a8492;background:#f5f7fa;border-radius:8px;padding:9px;margin-top:9px}.ocr-status{font-size:11px;color:#647082;margin-top:8px;min-height:17px}.ocr-actions{display:flex;gap:7px;margin-top:9px}.ocr-actions .btn{flex:1}
+.ocr-progress{height:4px;background:#e8ebf0;border-radius:5px;overflow:hidden;margin-top:7px}.ocr-progress-bar{height:100%;width:0;background:var(--mint);transition:width .2s}
+.locked-panel-mark{fill:rgba(50,102,233,.035);stroke:#3266e9;stroke-width:2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;pointer-events:none}.locked-panel-label{font-size:14px;font-weight:800;fill:#3266e9;stroke:#fff;stroke-width:3px;paint-order:stroke;pointer-events:none}
+.format-choice{padding:9px 15px;border-bottom:1px solid var(--line);display:grid;gap:5px}
+  .save-options{display:grid;gap:5px;margin-top:12px}.save-options label.subtle{margin-top:3px}.save-options input:disabled{background:#f1f3f6;color:#929aa7;cursor:not-allowed}
+  :root[data-theme="dark"]{color-scheme:dark;--ink:#e5eaf2;--muted:#a0aaba;--line:#36404f;--paper:#202733;--wash:#151a22;--blue:#83a6ff;--blue-soft:#263650;--mint:#39c49a;--shadow:0 12px 34px rgba(0,0,0,.3)}
+  :root[data-theme="dark"] header{background:var(--paper)}
+  :root[data-theme="dark"] .btn:not(.primary){background:#252d39;color:var(--ink);border-color:var(--line)}
+  :root[data-theme="dark"] .btn:not(.primary):hover{background:#303a48;border-color:#596579}
+  :root[data-theme="dark"] .btn.ghost{background:transparent;border-color:transparent}
+  :root[data-theme="dark"] .counter{background:#303948;color:#d0d7e2}
+  :root[data-theme="dark"] .queue-tools,:root[data-theme="dark"] .split-tools,:root[data-theme="dark"] .canvas-toolbar,:root[data-theme="dark"] .section,:root[data-theme="dark"] .panel-head,:root[data-theme="dark"] .format-choice,:root[data-theme="dark"] .tab-strip{border-color:var(--line)}
+  :root[data-theme="dark"] .file-row:hover{background:#252d38}
+  :root[data-theme="dark"] .thumb,:root[data-theme="dark"] .empty-icon{background:#303948;color:#aab4c3}
+  :root[data-theme="dark"] .row-count{background:#262e3b;color:#d0d7e2}
+  :root[data-theme="dark"] .tool-btn{color:#bec7d4}
+  :root[data-theme="dark"] .tool-btn:hover{background:#2a3341}
+  :root[data-theme="dark"] .canvas-scroll{background-color:#191f29;background-image:radial-gradient(#2c3543 1px,transparent 1px)}
+  :root[data-theme="dark"] .welcome{background:rgba(32,39,51,.94);border-color:#465163}
+  :root[data-theme="dark"] .drop-note{color:#9ba6b5}
+  :root[data-theme="dark"] .mode-card.selected,:root[data-theme="dark"] .panel-item.active{background:#263650;border-color:#526b9c}
+  :root[data-theme="dark"] .panel-item{background:#202733}
+  :root[data-theme="dark"] .panel-number{background:#293750;color:#a9c0ff}
+  :root[data-theme="dark"] .mini-action:hover{background:#303948;color:#e5eaf2}
+  :root[data-theme="dark"] .no-panels{border-color:#465163;color:#a0aaba}
+  :root[data-theme="dark"] .batch-note,:root[data-theme="dark"] .notice{background:#29323f;color:#c0c9d6}
+  :root[data-theme="dark"] .batch-note strong,:root[data-theme="dark"] .ocr-copy strong{color:#e5eaf2}
+  :root[data-theme="dark"] .export-box{background:#1b222c}
+  :root[data-theme="dark"] .export-summary{color:#aab4c3}
+  :root[data-theme="dark"] .export-summary strong{color:#e5eaf2}
+  :root[data-theme="dark"] .progress,:root[data-theme="dark"] .ocr-progress{background:#303948}
+  :root[data-theme="dark"] .tab-strip{background:#1b222c}
+  :root[data-theme="dark"] .tab-btn{color:#aab4c3}
+  :root[data-theme="dark"] .tab-btn.active{background:#29323f;color:var(--blue);border-color:#404b5c}
+  :root[data-theme="dark"] .select{background:#202733;color:var(--ink);border-color:var(--line)}
+  :root[data-theme="dark"] .select option{background:#202733;color:var(--ink)}
+  :root[data-theme="dark"] .ocr-copy span,:root[data-theme="dark"] .ocr-status{color:#aab4c3}
+  :root[data-theme="dark"] .swatch{background:#303948;border-color:#596579}
+  :root[data-theme="dark"] .save-options input:disabled{background:#29323f;color:#8793a3}
+  :root[data-theme="dark"] .canvas-hint{background:rgba(12,16,23,.9)}
+  :root[data-theme="dark"] .open-help{background:#403719;border-color:#665728;color:#f7e9b4}
+  :root[data-theme="dark"] .offline-setup{background:#202f49;border-color:#344c70;color:#d7e5ff}
+  .quad-draft-line{fill:rgba(34,169,132,.12);stroke:#22a984;stroke-width:2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;pointer-events:none}.quad-draft-point{fill:#fff;stroke:#138867;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none}.vertex-label{font-size:12px;font-weight:800;fill:#fff;stroke:rgba(20,40,90,.85);stroke-width:3px;paint-order:stroke;pointer-events:none}.vertex-handle{cursor:move}
+  :root[data-theme="dark"] .quad-draft-point{fill:#202733}
+  .image-wrap svg.pan-mode{touch-action:pan-x pan-y;cursor:grab}.image-wrap svg.pan-mode:active{cursor:grabbing}
+  @supports(min-height:100dvh){.app{min-height:100dvh}}
+  @media(max-width:1050px){header{gap:8px;padding:0 12px}.brand{min-width:0}.brand-sub,.top-status{display:none}.top-actions{min-width:0;overflow-x:auto;scrollbar-width:none}.top-actions::-webkit-scrollbar{display:none}.top-actions .btn{flex:0 0 auto}}
+  @media(max-width:900px){
+    header{height:auto;min-height:68px;flex-wrap:wrap;gap:8px;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 10px max(12px,env(safe-area-inset-left))}
+    .brand{min-width:0}.brand-sub,.top-status{display:none}
+    .top-actions{width:100%;flex:1 1 100%;overflow-x:auto;justify-content:flex-start;gap:7px;padding:1px 0 3px;scrollbar-width:none}.top-actions::-webkit-scrollbar{display:none}.top-actions .btn{flex:0 0 auto}
+    main{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(52vh,1fr) auto;gap:10px;padding:10px max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+    .queue{max-height:190px}.file-list{display:flex;overflow:auto;gap:5px}.empty-queue{min-height:95px}.file-row{min-width:190px;margin:0}
+    .canvas-panel{min-height:52vh}.right{position:static;max-height:none}.right-scroll{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.section{border-right:1px solid var(--line)}.section:last-child{border-right:0}.footerline{display:none}
+    .canvas-toolbar{justify-content:flex-start}.canvas-hint{max-width:calc(100% - 20px);white-space:normal;text-align:center}
+  }
+  @media(max-width:900px){main{grid-template-rows:auto minmax(52dvh,1fr) auto}.canvas-panel{min-height:52dvh}}
+  @media(max-width:520px){.top-actions .btn span.label{display:none}.top-actions .btn{padding:8px 10px}.canvas-toolbar{justify-content:center}.canvas-scroll{padding:14px}.right-scroll{display:block}.section{border-right:0}}
+  @media(hover:none) and (pointer:coarse){button,.btn,.tool-btn{min-height:44px}.tool-btn{height:auto;padding:7px 10px}.mini-action{min-width:40px;min-height:40px}.tab-btn{min-height:44px}.image-wrap svg:not(.pan-mode){touch-action:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="logo">Q</div><div><div class="brand-name">Quadro</div><div class="brand-sub">Recortador de painéis</div></div></div>
+    <div class="top-status"><span class="status-dot"></span><span id="privacyStatus">Processamento local no seu navegador</span></div>
+    <div class="top-actions">
+      <button id="addImagesTop" class="btn"><span class="ico">＋</span><span class="label">Adicionar páginas</span></button>
+      <button id="rollBtn" class="btn" hidden title="Juntar as páginas em um rolo contínuo"><span class="ico">↕</span><span class="label">Unir em rolo</span></button>
+      <button id="restorePagesBtn" class="btn" hidden title="Voltar à lista de páginas originais"><span class="ico">↩</span><span class="label">Páginas originais</span></button>
+      <button id="downloadRollTop" class="btn" hidden title="Baixar o rolo inteiro no formato escolhido"><span class="ico">⇩</span><span class="label">Baixar rolo</span></button>
+      <button id="downloadAllEditsTop" class="btn" hidden title="Baixar todas as imagens modificadas em um ZIP"><span class="ico">⇩</span><span class="label">Baixar melhorias</span></button>
+      <button id="exportTop" class="btn primary" disabled><span class="ico">⇩</span><span class="label">Exportar cortes</span></button>
+      <button id="themeToggle" class="btn" type="button" aria-label="Ativar modo noturno" aria-pressed="false" title="Ativar modo noturno"><span class="ico" aria-hidden="true">☾</span><span class="label">Modo noturno</span></button>
+      <button id="shortcutSettingsBtn" class="btn" type="button" title="Personalizar atalhos do teclado"><span class="ico" aria-hidden="true">⌨</span><span class="label">Atalhos</span></button>
+    </div>
+  </header>
+  <aside class="open-help" id="localFileHelp" hidden role="status"><div class="open-help-copy"><strong>Esta é uma prévia do arquivo no iPad.</strong> O Telegram/Arquivos pode exibir a página, mas bloquear a seleção de imagens. No Windows, abra <b>Iniciar Quadro na rede.cmd</b>; no iPad, digite no Safari o endereço que aparecer (os dois aparelhos precisam estar no mesmo Wi-Fi). Não abra o HTML anexado para usar o app.</div><button class="open-help-close" id="closeLocalFileHelp" type="button" aria-label="Fechar aviso">×</button></aside>
+  <aside class="offline-setup" id="offlineSetup" role="status"><div class="offline-setup-text" id="offlineSetupText">Preparando o modo offline. Abra esta página uma vez com internet e aguarde a confirmação; depois use Safari → Compartilhar → Adicionar à Tela de Início.</div><button class="offline-setup-close" id="closeOfflineSetup" type="button" aria-label="Fechar aviso">×</button></aside>
+  <main>
+    <aside class="panel queue">
+      <div class="panel-head"><span class="panel-title">Páginas</span><span class="counter" id="pageCounter">0</span></div>
+      <div class="queue-tools"><button id="addFiles" class="btn small"><span>＋</span> Arquivos</button><button id="addFolder" class="btn small"><span>▣</span> Pasta</button></div>
+      <div class="split-tools"><div class="split-tools-title">Dividir páginas longas</div><div class="split-tools-row"><button id="markSplitBtn" class="btn small" disabled>＋ Marcar cortes</button><button id="splitPagesBtn" class="btn small" disabled>Dividir marcadas</button></div><p class="split-tools-note" id="splitMarkNote">Selecione uma página, clique em “Marcar cortes” e depois clique na imagem em cada ponto onde quer separar. Você pode marcar várias páginas.</p><div class="split-mark-actions"><button id="undoSplitMarkBtn" class="btn small" disabled>Desfazer ponto</button><button id="clearSplitMarksBtn" class="btn small" disabled>Limpar marcações</button></div><button id="saveSplitFolderBtn" class="btn small split-download-btn" hidden>⇩ Salvar partes em uma pasta…</button><button id="downloadSplitBtn" class="btn small split-download-btn" hidden>⇩ Baixar ZIP das páginas divididas</button><p class="split-tools-note" id="splitSaveNote" hidden>A última pasta escolhida será sugerida na próxima vez.</p></div>
+      <div class="file-list" id="fileList"><div class="empty-queue"><div class="empty-icon">▧</div><div><strong>Sua fila está vazia</strong>Adicione várias imagens para começar.</div></div></div>
+    </aside>
+    <section class="panel canvas-panel">
+      <div class="canvas-toolbar">
+        <div class="tool-group" id="markingTools"><span class="tool-label">MARCAÇÃO</span><button id="drawMode" class="tool-btn active" title="Desenhar recortes"><span>▱</span> Painel</button><button id="lineMode" class="tool-btn"><span>↔</span> Faixa inteira</button><button id="quadMode" class="tool-btn"><span>◇</span> Polígono</button><button id="finishQuadBtn" class="btn small primary" type="button" hidden>Concluir com 3 pontos</button></div>
+        <div class="tool-group" id="cropTools"><button id="cropImageMode" class="tool-btn" title="Arraste para selecionar a área da imagem que deseja manter"><span>▣</span> Cortar imagem</button><button id="applyCropBtn" class="btn small primary" hidden disabled>Aplicar corte</button><button id="cancelCropBtn" class="btn small" hidden>Cancelar</button><button id="restoreCropBtn" class="btn small" hidden>Desfazer corte</button></div>
+        <div class="tool-group"><button id="panMode" class="tool-btn" type="button" aria-pressed="false" title="Mover a tela com o dedo ou mouse"><span>✋</span> Mover tela</button><button id="quickTabSwitch" class="tool-btn" type="button" title="Atalhos: C painel livre, V faixa inteira, Q polígono, X texto e retoque">✎ Texto &amp; retoque <span class="subtle">X</span></button></div>
+        <div class="tool-group"><button id="zoomOut" class="btn small" title="Reduzir zoom">−</button><span class="zoom-readout" id="zoomReadout">Ajustar</span><button id="zoomIn" class="btn small" title="Aumentar zoom">＋</button><button id="fitZoom" class="btn small" title="Ajustar à tela">Ajustar</button></div>
+      </div>
+      <div class="canvas-scroll" id="canvasScroll">
+        <div class="welcome" id="welcome">
+          <div class="welcome-mark">▧</div><h1>Separe seus painéis</h1>
+          <p>Carregue as páginas, contorne cada quadro e exporte todos os recortes de uma vez.</p>
+          <button id="welcomeAdd" class="btn primary"><span>＋</span> Selecionar imagens</button>
+          <div class="drop-note">Você também pode arrastar imagens para esta área</div>
+        </div>
+        <div class="image-wrap" id="imageWrap" hidden>
+          <img id="pageImage" alt="Página selecionada">
+          <div class="roll-image-list" id="rollImages" hidden></div>
+          <svg id="overlay" aria-label="Área para marcar os painéis"></svg>
+        </div>
+        <div class="canvas-hint" id="canvasHint" hidden>Arraste para marcar um recorte • clique em uma marcação para mover ou redimensionar</div>
+      </div>
+    </section>
+    <aside class="panel right">
+      <div class="panel-head"><span class="panel-title" id="rightTitle">Marcações</span><span class="counter" id="panelCounter">0 painéis</span></div>
+      <div class="tab-strip"><button id="cutTabButton" class="tab-btn active">Recortes</button><button id="textTabButton" class="tab-btn">Texto & retoque</button></div>
+      <div class="format-choice"><label class="subtle" for="exportFormat">Formato para páginas e melhorias</label><select id="exportFormat" class="select"><option value="image/jpeg" selected>JPEG · qualidade alta</option><option value="image/png">PNG · sem perda</option></select></div>
+      <div class="right-scroll" id="cutsPanel">
+        <section class="section">
+          <div class="section-top"><span class="section-heading">Como marcar</span><span class="subtle" id="currentFileLabel">Nenhuma página</span></div>
+          <p class="how">Arraste sobre a imagem para delimitar um quadro. As marcações seguem a ordem em que foram criadas.</p>
+          <div class="mode-card selected" id="rectModeCard"><span class="radio"></span><div><div class="mode-title">Painel livre</div><div class="mode-desc">Contorne qualquer área da página.</div></div></div>
+          <div class="mode-card" id="bandModeCard"><span class="radio"></span><div><div class="mode-title">Faixa de largura total</div><div class="mode-desc">Arraste na vertical para marcar uma faixa de ponta a ponta.</div></div></div><div class="mode-card" id="quadModeCard"><span class="radio"></span><div><div class="mode-title">Polígono · 3 ou 4 pontos</div><div class="mode-desc">Arraste na vertical para criar uma faixa de largura total; arraste na diagonal para criar um quadrilátero. Depois mova os vértices. Também pode clicar em 3 ou 4 pontos.</div></div></div>
+          <div class="batch-note"><strong>Atalho:</strong> copie o mesmo desenho para outras páginas com dimensões parecidas usando “Copiar marcações”. As coordenadas são ajustadas proporcionalmente.</div>
+        </section>
+        <section class="section">
+          <div class="section-top"><span class="section-heading">Painéis desta página</span><button id="undoBtn" class="btn small ghost" disabled title="Remover último painel">Desfazer</button></div>
+          <div id="panelList" class="panel-list"><div class="no-panels">Ainda não há marcações.<br>Arraste para Painel/Faixa ou use 4 pontos para contornos inclinados.</div></div>
+          <div style="display:flex;gap:7px;margin-top:10px"><button id="deleteSelected" class="btn small" disabled>Remover selecionado</button><button id="copyLayout" class="btn small" disabled>Copiar marcações</button></div>
+        </section>
+        <section class="section">
+          <div class="section-top"><span class="section-heading">Saída</span></div>
+          <div class="export-box">
+            <div class="export-summary"><span>Recortes marcados</span><strong id="exportCount">0</strong></div>
+            <div class="save-options">
+              <label class="subtle" style="display:flex;align-items:center;gap:7px"><input id="trimCropMargins" type="checkbox" checked> Remover margens externas brancas</label>
+              <label class="subtle" for="cropNameMode">Nomes dos recortes dentro do ZIP</label>
+              <select id="cropNameMode" class="select"><option value="keep">Manter os nomes atuais</option><option value="rename">Renomear em sequência</option></select>
+              <label class="subtle" for="cropNamePrefix">Prefixo dos novos nomes</label>
+              <input id="cropNamePrefix" class="select" type="text" value="pagina" disabled>
+              <label class="subtle" for="cropZipName">Nome do ZIP</label>
+              <input id="cropZipName" class="select" type="text" value="paineis-recortados" placeholder="paineis-recortados">
+            </div>
+            <button id="exportBtn" class="btn primary export-btn" disabled><span>⇩</span> Baixar ZIP</button>
+            <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+            <p class="footnote">Polígonos em PNG; painéis e faixas em JPG • arquivos na raiz do ZIP</p>
+          </div>
+        </section>
+      </div>
+      <div class="right-scroll" id="textPanel" hidden>
+        <section class="section">
+          <div class="section-top"><span class="section-heading">Reconhecer texto</span><span class="subtle" id="textCount">0 linhas</span></div>
+          <label class="subtle" for="ocrLanguage">Idioma do balão</label>
+          <select id="ocrLanguage" class="select" style="margin:5px 0 8px">
+            <option value="por+eng">Português + English (recomendado)</option><option value="por">Português</option><option value="eng">English</option><option value="jpn">日本語</option><option value="kor">한국어</option><option value="chi_sim">中文简体</option><option value="chi_tra">中文繁體</option>
+          </select>
+          <label class="subtle" for="ocrEngine">Motor de leitura</label>
+          <select id="ocrEngine" class="select" style="margin:5px 0 8px"><option value="accelerated" selected>Automático · GPU quando disponível</option><option value="tesseract">Compatibilidade · processador</option></select>
+          <label class="subtle" style="display:flex;gap:7px;align-items:center"><input id="scanAllPages" type="checkbox" checked> Ler todas as páginas carregadas · mais demorado</label>
+          <div class="notice">Por padrão, o OCR lê somente a página selecionada. Em filas grandes, a leitura automática fica pausada para evitar sobrecarga.</div>
+          <button id="detectTextBtn" class="btn" style="width:100%;margin-top:10px">Ler novamente</button>
+          <div class="ocr-status" id="ocrStatus" role="status" aria-live="polite">Escolha o idioma e faça a leitura.</div>
+          <div class="ocr-progress" id="ocrProgress" hidden><div class="ocr-progress-bar" id="ocrProgressBar"></div></div>
+          <div class="ocr-list" id="textList"><div class="no-panels">Nenhum texto reconhecido ainda.</div></div>
+          <div class="ocr-actions"><button id="selectAllText" class="btn small" disabled>Selecionar tudo</button><button id="eraseTextBtn" class="btn small primary" disabled title="Ação manual: usa IA somente quando você clicar. A limpeza automática da leitura não usa IA.">Apagar seleção · IA manual</button></div>
+          <div class="notice">A limpeza automática após a leitura usa preenchimento local pela cor do balão, sem carregar nem usar IA. “Apagar seleção · IA manual” e a Borracha IA só usam IA quando você clica para corrigir.</div>
+        </section>
+        <section class="section">
+          <div class="section-top"><span class="section-heading">Correção manual</span><button id="undoRetouchBtn" class="btn small ghost" disabled>Desfazer retoque</button></div>
+          <p class="how">A Borracha IA reconstrói o fundo ao redor do texto. Pinte uma área manualmente ou selecione linhas detectadas. A primeira utilização baixa o modelo, e as imagens ficam no dispositivo.</p>
+          <div class="brush-row"><button id="aiEraseBrushBtn" class="btn small">Borracha IA</button><button id="retouchSelectBtn" class="btn small active">Selecionar texto</button></div>
+          <div class="brush-row"><button id="sampleColorBtn" class="btn small">Capturar cor</button><button id="colorBrushBtn" class="btn small">Pincel do balão <span id="colorSwatch" class="swatch"></span></button></div>
+          <div class="brush-row"><button id="restoreBrushBtn" class="btn small">Restaurar original</button><span class="subtle" style="align-self:center;text-align:center;flex:1">Preenchimento IA com GPU quando disponível</span></div>
+          <div class="section-top" style="margin:12px 0 4px"><span class="subtle">Tamanho do pincel</span><span class="subtle" id="brushSizeLabel">28 px</span></div>
+          <input id="brushSize" class="range" type="range" min="6" max="120" value="28">
+          <div class="ocr-status" id="retouchStatus">Selecione uma ferramenta de correção.</div>
+          <div class="save-options">
+            <label class="subtle" for="retouchedZipName">Nome do ZIP</label>
+            <input id="retouchedZipName" class="select" type="text" value="paginas-corrigidas" placeholder="paginas-corrigidas">
+          </div>
+          <button id="downloadRetouchedBtn" class="btn" style="width:100%;margin-top:10px" disabled>⇩ Baixar todas as melhorias (ZIP)</button>
+        </section>
+      </div>
+    </aside>
+  </main>
+  <div class="footerline"><span><span class="status-dot"></span> As imagens ficam no seu dispositivo</span><span id="imageSizeLabel">—</span></div>
+</div>
+<dialog id="shortcutsDialog" class="shortcuts-dialog" aria-labelledby="shortcutsTitle">
+  <div class="shortcuts-head"><div><h2 id="shortcutsTitle">Atalhos do teclado</h2><p>Clique em uma combinação e pressione a tecla ou o atalho que deseja usar.</p></div><button id="closeShortcuts" class="btn small" type="button" aria-label="Fechar">Fechar</button></div>
+  <div id="shortcutsList" class="shortcuts-list"></div>
+  <div class="shortcuts-foot"><span>Combinações iguais não podem ser usadas em duas ações. Atalhos reservados pelo navegador podem continuar acionando o navegador.</span><button id="resetShortcuts" class="btn small" type="button">Restaurar padrão</button></div>
+</dialog>
+<input id="imageInput" type="file" accept="image/*" multiple>
+<input id="folderInput" type="file" accept="image/*" multiple webkitdirectory directory>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  if(location.protocol==='file:'&&matchMedia('(pointer:coarse)').matches){$('localFileHelp').hidden=false;$('closeLocalFileHelp').addEventListener('click',()=>$('localFileHelp').hidden=true)}
+  const shortcutDefinitions=[
+    {id:'openCuts',label:'Painel livre',description:'Abre recortes no modo de painel livre.',defaults:['c']},
+    {id:'band',label:'Faixa de largura total',description:'Ativa o modo de faixa.',defaults:['v']},
+    {id:'polygon',label:'Polígono',description:'Ativa o modo de recorte por pontos.',defaults:['q']},
+    {id:'undo',label:'Desfazer',description:'Desfaz o retoque ou remove o último painel.',defaults:['mod+z']},
+    {id:'deleteSelected',label:'Apagar painel selecionado',description:'Remove o painel selecionado.',defaults:['delete','backspace']},
+    {id:'finishPolygon',label:'Concluir polígono',description:'Finaliza o polígono com pelo menos três pontos.',defaults:['enter']},
+    {id:'cancel',label:'Cancelar ação',description:'Cancela o desenho ou a marcação de corte atual.',defaults:['escape']},
+    {id:'previousPage',label:'Página anterior',description:'Seleciona a página anterior da fila.',defaults:['arrowleft']},
+    {id:'nextPage',label:'Próxima página',description:'Seleciona a próxima página da fila.',defaults:['arrowright']}
+  ];
+  const shortcutDefaults=Object.fromEntries(shortcutDefinitions.map(item=>[item.id,item.defaults]));
+  const shortcutStorageKey='quadro-shortcuts-v1';
+  function loadShortcuts(){try{const saved=JSON.parse(localStorage.getItem(shortcutStorageKey)||'{}');return Object.fromEntries(shortcutDefinitions.map(item=>[item.id,Object.hasOwn(saved,item.id)?saved[item.id]:item.defaults]))}catch{return{...shortcutDefaults}}}
+  let shortcuts=loadShortcuts(),shortcutCaptureId=null;
+  const shortcutKeyAliases={esc:'escape',del:'delete',backspace:'delete',' ':'space','+':'plus'};
+  function normalizeShortcutKey(key){const value=String(key||'').toLowerCase();return shortcutKeyAliases[value]||value}
+  function shortcutFromEvent(event){const key=normalizeShortcutKey(event.key);if(['control','shift','alt','meta'].includes(key)||key==='dead'||key==='process')return null;const parts=[];if(event.ctrlKey||event.metaKey)parts.push('mod');if(event.altKey)parts.push('alt');if(event.shiftKey)parts.push('shift');parts.push(key);return parts.join('+')}
+  function shortcutValues(value){return Array.isArray(value)?value:[value]}
+  function displayShortcut(value){const mac=/Mac|iPhone|iPad/.test(navigator.platform||'');return shortcutValues(value).map(shortcut=>String(shortcut).split('+').map(part=>({mod:mac?'⌘':'Ctrl',alt:mac?'⌥':'Alt',shift:'Shift',escape:'Esc',delete:'Delete',enter:'Enter',space:'Space',plus:'+',arrowleft:'←',arrowright:'→',arrowup:'↑',arrowdown:'↓'}[part]||part.toUpperCase())).join(' + ')).join('  /  ')}
+  function updateShortcutLabels(){
+    const line=$('lineMode'),polygon=$('quadMode');if(line){line.lastChild.textContent=` Faixa inteira · ${displayShortcut(shortcuts.band)}`;line.title=`Atalho: ${displayShortcut(shortcuts.band)}`}
+    if(polygon){polygon.lastChild.textContent=` Polígono · ${displayShortcut(shortcuts.polygon)}`;polygon.title=`Atalho: ${displayShortcut(shortcuts.polygon)}`}
+    const quick=$('quickTabSwitch');if(quick){const text=state.activeTab==='text';quick.textContent=text?`✂ Recortes · ${displayShortcut(shortcuts.openCuts)}`:`✎ Texto & retoque · ${displayShortcut(shortcuts.textTab)}`;quick.title=`Atalhos: ${displayShortcut(shortcuts.openCuts)} painel livre, ${displayShortcut(shortcuts.band)} faixa inteira, ${displayShortcut(shortcuts.polygon)} polígono, ${displayShortcut(shortcuts.textTab)} texto e retoque`;quick.setAttribute('aria-label',text?'Voltar para a ferramenta de recorte':'Abrir texto e retoque')}
+  }
+  function saveShortcuts(){try{localStorage.setItem(shortcutStorageKey,JSON.stringify(shortcuts))}catch{notify('Não foi possível salvar os atalhos neste navegador.')}updateShortcutLabels();updateCanvasHint()}
+  function renderShortcutSettings(){
+    const list=$('shortcutsList');list.replaceChildren();
+    for(const item of shortcutDefinitions){
+      const row=document.createElement('div');row.className='shortcut-row';
+      const copy=document.createElement('div');const name=document.createElement('div');name.className='shortcut-name';name.textContent=item.label;const description=document.createElement('div');description.className='shortcut-description';description.textContent=item.description;copy.append(name,description);
+      const button=document.createElement('button');button.type='button';button.className='btn small shortcut-value'+(shortcutCaptureId===item.id?' listening':'');button.dataset.shortcutId=item.id;button.textContent=shortcutCaptureId===item.id?'Pressione agora…':displayShortcut(shortcuts[item.id]);button.setAttribute('aria-label',`Alterar atalho: ${item.label}`);
+      row.append(copy,button);list.appendChild(row);
+    }
+  }
+  function endShortcutCapture(){shortcutCaptureId=null;renderShortcutSettings()}
+  function beginShortcutCapture(id){shortcutCaptureId=id;renderShortcutSettings();$('shortcutsList').querySelector(`[data-shortcut-id="${id}"]`)?.focus()}
+  $('shortcutSettingsBtn').addEventListener('click',()=>{const dialog=$('shortcutsDialog');renderShortcutSettings();if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','')});
+  $('shortcutsList').addEventListener('click',event=>{const button=event.target.closest('[data-shortcut-id]');if(button)beginShortcutCapture(button.dataset.shortcutId)});
+  $('closeShortcuts').addEventListener('click',()=>{const dialog=$('shortcutsDialog');shortcutCaptureId=null;if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open')});
+  $('resetShortcuts').addEventListener('click',()=>{shortcuts=Object.fromEntries(shortcutDefinitions.map(item=>[item.id,[...item.defaults]]));try{localStorage.removeItem(shortcutStorageKey)}catch{}shortcutCaptureId=null;updateShortcutLabels();updateCanvasHint();renderShortcutSettings();notify('Atalhos padrão restaurados.')});
+  $('shortcutsDialog').addEventListener('cancel',()=>{shortcutCaptureId=null});
+  function applyTheme(theme){
+    const dark=theme==='dark';document.documentElement.dataset.theme=dark?'dark':'light';
+    const button=$('themeToggle');button.setAttribute('aria-pressed',String(dark));
+    button.setAttribute('aria-label',dark?'Ativar modo claro':'Ativar modo noturno');
+    button.title=dark?'Ativar modo claro':'Ativar modo noturno';
+    button.innerHTML='<span class="ico" aria-hidden="true">'+(dark?'☀':'☾')+'</span><span class="label">'+(dark?'Modo claro':'Modo noturno')+'</span>';
+    const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=dark?'#151a22':'#f6f7f9';
+    try{localStorage.setItem('quadro-theme',dark?'dark':'light')}catch{}
+  }
+  let initialTheme='light';try{if(localStorage.getItem('quadro-theme')==='dark')initialTheme='dark'}catch{}
+  applyTheme(initialTheme);
+  $('themeToggle').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+  const els = {
+    imageInput:$('imageInput'),folderInput:$('folderInput'),fileList:$('fileList'),pageCounter:$('pageCounter'),
+    welcome:$('welcome'),imageWrap:$('imageWrap'),pageImage:$('pageImage'),rollImages:$('rollImages'),overlay:$('overlay'),canvasScroll:$('canvasScroll'),canvasHint:$('canvasHint'),
+    panelCounter:$('panelCounter'),panelList:$('panelList'),currentFileLabel:$('currentFileLabel'),imageSizeLabel:$('imageSizeLabel'),rightTitle:$('rightTitle'),
+    exportTop:$('exportTop'),exportBtn:$('exportBtn'),rollBtn:$('rollBtn'),restorePagesBtn:$('restorePagesBtn'),splitPagesBtn:$('splitPagesBtn'),markSplitBtn:$('markSplitBtn'),undoSplitMarkBtn:$('undoSplitMarkBtn'),clearSplitMarksBtn:$('clearSplitMarksBtn'),saveSplitFolderBtn:$('saveSplitFolderBtn'),downloadSplitBtn:$('downloadSplitBtn'),downloadRollTop:$('downloadRollTop'),exportCount:$('exportCount'),exportFormat:$('exportFormat'),trimCropMargins:$('trimCropMargins'),undoBtn:$('undoBtn'),deleteSelected:$('deleteSelected'),copyLayout:$('copyLayout'),
+    zoomReadout:$('zoomReadout'),progress:$('progress'),progressBar:$('progressBar'),toast:$('toast'),markingTools:$('markingTools'),
+    cutsPanel:$('cutsPanel'),textPanel:$('textPanel'),cutTabButton:$('cutTabButton'),textTabButton:$('textTabButton'),textCount:$('textCount'),
+    ocrLanguage:$('ocrLanguage'),ocrEngine:$('ocrEngine'),scanAllPages:$('scanAllPages'),detectTextBtn:$('detectTextBtn'),ocrStatus:$('ocrStatus'),ocrProgress:$('ocrProgress'),ocrProgressBar:$('ocrProgressBar'),textList:$('textList'),
+    selectAllText:$('selectAllText'),eraseTextBtn:$('eraseTextBtn'),undoRetouchBtn:$('undoRetouchBtn'),aiEraseBrushBtn:$('aiEraseBrushBtn'),retouchSelectBtn:$('retouchSelectBtn'),sampleColorBtn:$('sampleColorBtn'),colorBrushBtn:$('colorBrushBtn'),restoreBrushBtn:$('restoreBrushBtn'),colorSwatch:$('colorSwatch'),brushSize:$('brushSize'),brushSizeLabel:$('brushSizeLabel'),retouchStatus:$('retouchStatus'),downloadRetouchedBtn:$('downloadRetouchedBtn')
+  };
+  const state = { pages:[], rollSourcePages:null, splitSourcePages:null, splitMarks:new Map(), currentId:null, mode:'rect', panReturnMode:'rect', activeTab:'cuts', retouchTool:'select', brushSize:28, brushColor:null, zoom:1, fitScale:1, selectedId:null, drag:null, draft:null, quadDraft:null, cropRect:null, brushDraft:null, busy:false, rolling:false, splitting:false, ocrRunning:false, ocrWorker:null, ocrLang:null, ocrLoader:null, ocrAssetBase:'https://cdn.jsdelivr.net/npm', paddleOcr:null, paddleOcrLang:null, paddleOcrLoader:null, inpaintSession:null, inpaintLoader:null, inpaintModelBytes:null, inpaintStatus:'', inpaintProvider:'', ortLoader:null, ortAssetBase:'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/', history:[] };
+  window.addEventListener('beforeunload',event=>{if(!state.pages.length)return;persistAnnotationRecovery();event.preventDefault();event.returnValue=''});
+  window.addEventListener('pagehide',persistAnnotationRecovery);
+  updateShortcutLabels();
+  const imageExtensions = /\.(png|jpe?g|webp|gif|bmp|avif)$/i;
+  const imageCache=new Map(),DECODED_IMAGE_CACHE_LIMIT=8;
+  const pendingAutoScanPages=[];
+  let autoScanTimer=0;
+  let toastTimer;
+  let fallbackPanelCounter=0;
+  const annotationRecoveryStorageKey='quadro-panel-recovery-v1';
+  let annotationRecoveryTimer=0,annotationRecoveryWarningShown=false;
+
+  function notify(message,duration=2500){els.toast.textContent=message;els.toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>els.toast.classList.remove('show'),duration)}
+  function current(){return state.pages.find(p=>p.id===state.currentId)||null}
+  function pageRecoveryKey(file){return file?`${String(file.name||'').normalize('NFC').toLocaleLowerCase()}|${Number(file.size)||0}|${Number(file.lastModified)||0}`:''}
+  function loadAnnotationRecovery(){try{const saved=JSON.parse(localStorage.getItem(annotationRecoveryStorageKey)||'{}');return saved&&saved.pages&&typeof saved.pages==='object'?saved:{version:1,pages:{}}}catch{return{version:1,pages:{}}}}
+  function validRecoveryBoxes(boxes){
+    if(!Array.isArray(boxes))return[];
+    return boxes.filter(box=>box&&typeof box.id==='string'&&['x','y','w','h'].every(key=>Number.isFinite(box[key]))).map(box=>({id:box.id,x:box.x,y:box.y,w:box.w,h:box.h,mode:typeof box.mode==='string'?box.mode:undefined,points:Array.isArray(box.points)?box.points.filter(point=>point&&Number.isFinite(point.x)&&Number.isFinite(point.y)).map(point=>({x:point.x,y:point.y})):undefined}));
+  }
+  function scheduleAnnotationRecoverySave(){clearTimeout(annotationRecoveryTimer);annotationRecoveryTimer=setTimeout(persistAnnotationRecovery,180)}
+  function persistAnnotationRecovery(){
+    clearTimeout(annotationRecoveryTimer);annotationRecoveryTimer=0;
+    const recovery=loadAnnotationRecovery(),activeKeys=new Set();
+    for(const page of state.pages){
+      if(!page.recoveryKey||page.isRoll||page.isSplitPart)continue;
+      activeKeys.add(page.recoveryKey);recovery.pages[page.recoveryKey]={name:page.name,boxes:page.boxes,updatedAt:Date.now()};
+    }
+    const entries=Object.entries(recovery.pages);
+    entries.sort((a,b)=>(a[1]?.updatedAt||0)-(b[1]?.updatedAt||0));
+    while(entries.length>350){const removable=entries.findIndex(([key])=>!activeKeys.has(key));if(removable<0)break;const [key]=entries.splice(removable,1);delete recovery.pages[key]}
+    while(true){
+      try{localStorage.setItem(annotationRecoveryStorageKey,JSON.stringify({version:1,pages:recovery.pages}));break}
+      catch(error){const removable=entries.findIndex(([key])=>!activeKeys.has(key));if(removable>=0){const [key]=entries.splice(removable,1);delete recovery.pages[key];continue}
+        if(!annotationRecoveryWarningShown){annotationRecoveryWarningShown=true;console.warn('Não foi possível salvar a recuperação das marcações.',error);notify('O navegador não conseguiu salvar todas as marcações recuperáveis.')}
+        break;
+      }
+    }
+  }
+  function restorePageAnnotations(page,recovery){
+    if(!page.recoveryKey)return 0;
+    const saved=recovery.pages[page.recoveryKey];if(!saved||!Array.isArray(saved.boxes))return 0;
+    page.boxes=validRecoveryBoxes(saved.boxes);return page.boxes.length;
+  }
+  function pageUrl(page){return page.editUrl||page.url}
+  function totalPanels(){return state.pages.reduce((sum,p)=>sum+p.boxes.length,0)}
+  function hasImageChanges(source){return !!source&&(!!source.cropSnapshot||!!source.edits?.length)}
+  function niceSize(bytes){if(bytes<1024*1024)return `${Math.max(1,Math.round(bytes/1024))} KB`;return `${(bytes/1024/1024).toFixed(1)} MB`}
+  function fileBase(name){return name.replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_').trim()||'pagina'}
+  function safeNameBase(value,fallback){return String(value||'').trim().replace(/[\\/:*?"<>|]+/g,'_').replace(/[. ]+$/,'')||fallback}
+  function zipDownloadName(inputId,fallback){const entered=$(inputId).value.trim().replace(/\.zip$/i,'');return `${safeNameBase(entered,fallback)}.zip`}
+  function retouchedPageEntryName(sources,index,format){
+    const source=sources[index],originalFile=source.cropSnapshot?.file||source.file,originalName=source.cropSnapshot?.name||originalFile?.name||source.name,base=`${fileBase(originalName)}.${format.extension}`,sameName=sources.filter(page=>{
+      const pageOriginalFile=page.cropSnapshot?.file||page.file,pageOriginalName=page.cropSnapshot?.name||pageOriginalFile?.name||page.name;
+      return `${fileBase(pageOriginalName)}.${format.extension}`.toLocaleLowerCase()===base.toLocaleLowerCase();
+    }).length>1;
+    if(!sameName)return `paginas-corrigidas/${base}`;
+    const relative=originalFile?.quadroRelativePath||originalFile?.webkitRelativePath||'',folders=relative.split(/[\\/]/).slice(0,-1).filter(Boolean).map(part=>safeNameBase(part,'pasta'));
+    return folders.length?`paginas-corrigidas/${folders.join('/')}/${base}`:`paginas-corrigidas/duplicadas/${String(index+1).padStart(3,'0')}/${base}`;
+  }
+  function syncRenameField(modeId,prefixId){$(prefixId).disabled=$(modeId).value!=='rename'}
+  function reservePanelNumbers(count){
+    try{
+      const stored=Number(localStorage.getItem('quadro-panel-export-counter-v1'));
+      const last=Math.max(Number.isSafeInteger(stored)&&stored>=0?stored:0,fallbackPanelCounter);
+      const next=last+count;if(!Number.isSafeInteger(next))throw new Error('Contador de exportação excedeu o limite seguro.');
+      localStorage.setItem('quadro-panel-export-counter-v1',String(next));fallbackPanelCounter=next;return last+1;
+    }catch{
+      if(!fallbackPanelCounter)fallbackPanelCounter=Date.now()*100;
+      const first=fallbackPanelCounter+1;fallbackPanelCounter+=count;return first;
+    }
+  }
+  function loadImage(url){
+    if(imageCache.has(url)){const cached=imageCache.get(url);imageCache.delete(url);imageCache.set(url,cached);return cached}
+    const promise=new Promise((resolve,reject)=>{const img=new Image();img.decoding='async';img.onload=()=>resolve(img);img.onerror=error=>{imageCache.delete(url);reject(error)};img.src=url});
+    imageCache.set(url,promise);
+    while(imageCache.size>DECODED_IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value);
+    return promise;
+  }
+  async function ensureDimensions(page){
+    if(page.width&&page.height)return;
+    const img=await loadImage(pageUrl(page));page.width=img.naturalWidth;page.height=img.naturalHeight;
+  }
+  function yieldToBrowser(){return new Promise(resolve=>setTimeout(resolve,0))}
+
+  function schedulePendingAutoScan(){
+    if(!pendingAutoScanPages.length||autoScanTimer||state.ocrRunning)return;
+    if(state.rolling||state.splitting||(state.busy&&!state.ocrRunning)){
+      autoScanTimer=setTimeout(()=>{autoScanTimer=0;schedulePendingAutoScan()},300);return;
+    }
+    const batch=pendingAutoScanPages.splice(0);
+    void detectText(batch).finally(()=>{if(pendingAutoScanPages.length)schedulePendingAutoScan()});
+  }
+  function queueAutoScan(pages){
+    for(const page of pages)if(!pendingAutoScanPages.some(pending=>pending.id===page.id))pendingAutoScanPages.push(page);
+    schedulePendingAutoScan();
+  }
+
+  function addFiles(files){
+    if(state.rolling||state.splitting||(state.busy&&!state.ocrRunning)){notify('Aguarde o processamento atual terminar.');return}
+    const accepted=Array.from(files).filter(f=>f.type.startsWith('image/')||imageExtensions.test(f.name));
+    if(!accepted.length){notify('Selecione arquivos de imagem para continuar.');return}
+    if(state.rollSourcePages||state.splitSourcePages){const originals=state.rollSourcePages||state.splitSourcePages;releaseSplitPages(state.pages);state.pages=originals;state.rollSourcePages=null;state.splitSourcePages=null;state.currentId=state.pages[0]?.id||null}
+    const addedPages=[],recovery=loadAnnotationRecovery();let restoredPanels=0;
+    for(const file of accepted){
+      const page={id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,file,url:URL.createObjectURL(file),editUrl:null,name:file.name,boxes:[],textBoxes:[],edits:[],width:0,height:0,recoveryKey:pageRecoveryKey(file)};
+      restoredPanels+=restorePageAnnotations(page,recovery);
+      state.pages.push(page);addedPages.push(page);
+    }
+    state.currentId=addedPages[0].id;state.selectedId=null;
+    renderQueue();renderCurrent();updateCounts();
+    scheduleAnnotationRecoverySave();
+    setActiveTab('cuts');
+    notify(restoredPanels?`${restoredPanels} recortes recuperados das páginas selecionadas.`:accepted.length>1?`${accepted.length} imagens adicionadas.`:'Imagem adicionada.');
+  }
+
+  function renderQueue(){
+    els.pageCounter.textContent=state.pages.length;
+    if(!state.pages.length){els.fileList.innerHTML='<div class="empty-queue"><div class="empty-icon">▧</div><div><strong>Sua fila está vazia</strong>Adicione várias imagens para começar.</div></div>';return}
+    els.fileList.innerHTML='';
+    state.pages.forEach((page,index)=>{
+      const row=document.createElement('div');row.className='file-row'+(page.id===state.currentId?' active':'');row.title=page.name;
+      const thumb=page.isRoll?'<div class="thumb"><span style="font-size:20px">↕</span></div>':`<div class="thumb"><img src="${pageUrl(page)}" alt="" loading="lazy" decoding="async"></div>`;
+      const meta=page.isRoll?`Rolo contínuo · ${page.segments.length} páginas`:`Página ${String(index+1).padStart(2,'0')} · ${page.width?`${page.width} × ${page.height}`:'carregando'}`;
+      row.innerHTML=`${thumb}<div class="file-copy"><div class="file-name"></div><div class="file-meta">${meta}</div></div><span class="row-count">${page.boxes.length}</span><button class="mini-action remove-page" title="Remover página da fila" aria-label="Remover página">×</button>`;
+      row.querySelector('.file-name').textContent=page.name;
+      const metaLabel=row.querySelector('.file-meta'),thumbImage=row.querySelector('.thumb img');
+      if(thumbImage)thumbImage.addEventListener('load',()=>{if(!page.width&&thumbImage.naturalWidth){page.width=thumbImage.naturalWidth;page.height=thumbImage.naturalHeight;metaLabel.textContent=`Página ${String(index+1).padStart(2,'0')} · ${page.width} × ${page.height}`}});
+      row.querySelector('.remove-page').hidden=!!page.isRoll;
+      row.addEventListener('click',()=>{state.currentId=page.id;state.selectedId=null;state.zoom=1;renderQueue();renderCurrent();updateCounts()});
+      row.querySelector('.remove-page').addEventListener('click',event=>{event.stopPropagation();removePage(page.id)});
+      els.fileList.appendChild(row);
+    });
+  }
+
+  function renderCurrent(){
+    const page=current();
+    if(!page){els.welcome.hidden=false;els.imageWrap.hidden=true;els.canvasHint.hidden=true;els.rollImages.hidden=true;els.pageImage.hidden=false;els.currentFileLabel.textContent='Nenhuma página';els.imageSizeLabel.textContent='—';renderPanels();return}
+    els.welcome.hidden=true;els.imageWrap.hidden=false;els.canvasHint.hidden=false;
+    els.currentFileLabel.textContent=page.isRoll?`${page.segments.length} páginas unidas`:page.name;
+    if(page.isRoll){
+      els.pageImage.hidden=true;els.rollImages.hidden=false;const preview=document.createElementNS('http://www.w3.org/2000/svg','svg');preview.setAttribute('viewBox',`0 0 ${page.width} ${page.height}`);preview.setAttribute('preserveAspectRatio','none');for(let i=0;i<page.segments.length;i++){const segment=page.segments[i],image=document.createElementNS('http://www.w3.org/2000/svg','image');image.setAttribute('href',pageUrl(segment.page));image.setAttribute('x','0');image.setAttribute('y',String(segment.y));image.setAttribute('width',String(page.width));image.setAttribute('height',String(segment.height));image.setAttribute('preserveAspectRatio','none');preview.appendChild(image)}els.rollImages.replaceChildren(preview);els.overlay.setAttribute('viewBox',`0 0 ${page.width} ${page.height}`);els.overlay.setAttribute('preserveAspectRatio','none');
+      setImageSize();els.imageSizeLabel.textContent=`Rolo contínuo · ${page.width} × ${page.height} px`;renderOverlay();renderQueue();renderPanels();return;
+    }
+    els.rollImages.hidden=true;els.rollImages.innerHTML='';els.pageImage.hidden=false;els.pageImage.src=pageUrl(page);
+    const loaded=()=>{page.width=els.pageImage.naturalWidth;page.height=els.pageImage.naturalHeight;els.overlay.setAttribute('viewBox',`0 0 ${page.width} ${page.height}`);els.overlay.setAttribute('preserveAspectRatio','none');setImageSize();els.imageSizeLabel.textContent=`${page.width} × ${page.height} px`;renderOverlay();renderQueue();updateCounts();};
+    if(els.pageImage.complete&&els.pageImage.naturalWidth)loaded();else els.pageImage.onload=loaded;
+    renderPanels();
+  }
+
+  function setImageSize(){
+    const page=current();if(!page||!page.width)return;
+    const available=Math.max(200,els.canvasScroll.clientWidth-48);
+    state.fitScale=Math.min(1,available/page.width);
+    const width=Math.max(220,Math.round(page.width*state.fitScale*state.zoom));
+    if(page.isRoll){
+      const rollHeight=Math.round(page.height*width/page.width),preview=els.rollImages.firstElementChild;els.rollImages.style.width=`${width}px`;els.rollImages.style.height=`${rollHeight}px`;if(preview){preview.setAttribute('width',String(width));preview.setAttribute('height',String(rollHeight));preview.style.width=`${width}px`;preview.style.height=`${rollHeight}px`}
+
+    }else{els.pageImage.style.width=`${width}px`;els.pageImage.style.height='auto'}
+    els.imageWrap.style.width=`${width}px`;els.imageWrap.style.height=`${Math.round(page.height*width/page.width)}px`;
+    els.zoomReadout.textContent=state.zoom===1?'Ajustar':`${Math.round(state.zoom*100)}%`;
+  }
+  window.addEventListener('resize',()=>{if(state.zoom===1)setImageSize()});
+
+  function escSvg(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function allSources(){return state.rollSourcePages||state.pages.filter(p=>!p.isRoll)}
+  function detectionsForPage(page){
+    if(!page)return[];
+    if(!page.isRoll)return(page.textBoxes||[]).map(box=>({box,x:box.x,y:box.y,w:box.w,h:box.h}));
+    return page.segments.flatMap(segment=>(segment.page.textBoxes||[]).map(box=>({box,x:box.x*page.width/segment.page.width,y:segment.y+box.y*segment.height/segment.page.height,w:box.w*page.width/segment.page.width,h:box.h*segment.height/segment.page.height})));
+  }
+  function renderTextList(){
+    const items=allSources().flatMap(source=>(source.textBoxes||[]).map(box=>({source,box})));
+    els.textCount.textContent=`${items.filter(item=>!item.box.removed).length} linhas`;
+    els.textList.innerHTML='';
+    if(!items.length)els.textList.innerHTML='<div class="no-panels">Nenhum texto reconhecido ainda.</div>';
+    items.forEach(({source,box})=>{
+      const row=document.createElement('label');row.className='ocr-row'+(box.removed?' done':'');
+      const check=document.createElement('input');check.type='checkbox';check.checked=!!box.selected&&!box.removed;check.disabled=box.removed||state.busy;
+      check.addEventListener('change',()=>{box.selected=check.checked;if(!current()?.isRoll&&current()?.id!==source.id){state.currentId=source.id;state.selectedId=null;renderQueue();renderCurrent()}renderOverlay();renderTextList()});
+      const copy=document.createElement('span');copy.className='ocr-copy';
+      const text=document.createElement('strong');text.textContent=box.text;
+      const meta=document.createElement('span');meta.textContent=`${source.name} · ${Math.round(box.confidence)}% OCR · balão ${Math.round(box.bubbleScore*100)}%${box.removed?' · apagado':box.autoCleanEligible?' · limpeza rápida':''}`;
+      copy.append(text,meta);row.append(check,copy);
+      row.addEventListener('click',event=>{if(event.target===check)return;if(!current()?.isRoll&&current()?.id!==source.id){state.currentId=source.id;state.selectedId=null;renderQueue();renderCurrent()} });
+      els.textList.appendChild(row);
+    });
+    const selectable=items.filter(item=>!item.box.removed);
+    els.selectAllText.disabled=!selectable.length||state.busy;
+    els.selectAllText.textContent=selectable.length&&selectable.every(item=>item.box.selected)?'Desmarcar tudo':'Selecionar tudo';
+    els.eraseTextBtn.disabled=!selectable.some(item=>item.box.selected)||state.busy;
+    els.detectTextBtn.disabled=!allSources().length||state.busy;
+    els.undoRetouchBtn.disabled=!state.history.length||state.busy;
+    els.aiEraseBrushBtn.classList.toggle('active',state.retouchTool==='aiErase');
+    els.retouchSelectBtn.classList.toggle('active',state.retouchTool==='select');
+    els.sampleColorBtn.classList.toggle('active',state.retouchTool==='sample');
+    els.colorBrushBtn.classList.toggle('active',state.retouchTool==='color');
+    els.restoreBrushBtn.classList.toggle('active',state.retouchTool==='restore');
+    els.colorBrushBtn.disabled=!state.brushColor||state.busy;
+    els.aiEraseBrushBtn.disabled=!current()||state.busy;els.sampleColorBtn.disabled=!current()||state.busy;els.retouchSelectBtn.disabled=state.busy;els.restoreBrushBtn.disabled=!current()||state.busy;
+    els.brushSize.disabled=state.busy;
+    els.downloadRetouchedBtn.disabled=state.busy||!allSources().some(hasImageChanges);
+    els.colorSwatch.style.background=state.brushColor||'#fff';
+    els.brushSizeLabel.textContent=`${state.brushSize} px`;
+    els.retouchStatus.textContent=state.inpaintStatus||(state.retouchTool==='aiErase'?'Pinte sobre a área que deseja remover; a IA vai reconstruir o fundo.':state.retouchTool==='sample'?'Clique em uma área limpa do balão para capturar a cor.':state.retouchTool==='color'?'Pinte sobre as letras para cobri-las com a cor capturada.':state.retouchTool==='restore'?'Pinte sobre uma área para restaurar os pixels originais.':state.retouchTool==='select'?'Clique nas caixas amarelas ou use a lista para selecionar texto.':'');
+  }
+  function setActiveTab(tab){
+    if(tab==='text'&&(state.mode==='crop'||state.mode==='splitmark'))setMode('rect');
+    state.activeTab=tab;els.cutsPanel.hidden=tab!=='cuts';els.textPanel.hidden=tab!=='text';
+    els.cutTabButton.classList.toggle('active',tab==='cuts');els.textTabButton.classList.toggle('active',tab==='text');
+    els.rightTitle.textContent=tab==='cuts'?'Marcações':'Texto & retoque';els.panelCounter.hidden=tab==='text';els.markingTools.hidden=tab==='text';$('cropTools').hidden=tab==='text';
+    updateShortcutLabels();
+    updateCanvasHint();renderOverlay();renderTextList();
+  }
+  function updateCanvasHint(){
+    const page=current();if(!page){els.canvasHint.hidden=true;$('finishQuadBtn').hidden=true;return}
+    els.canvasHint.hidden=false;
+    const points=state.quadDraft?.pageId===page.id?state.quadDraft.points:[];
+    $('finishQuadBtn').hidden=!(state.activeTab==='cuts'&&state.mode==='quad'&&points.length>=3);
+    if(state.mode==='pan')els.canvasHint.textContent='Arraste para mover a tela sem desenhar. Toque em “Mover tela” novamente para voltar ao modo anterior.';
+    else if(state.activeTab==='cuts'){const marks=state.splitMarks.get(page.id)||[],escapeLabel=displayShortcut(shortcuts.cancel);els.canvasHint.textContent=state.mode==='splitmark'?`Clique na imagem em cada altura onde quer separar. ${marks.length} corte(s) marcado(s) nesta página.`:state.mode==='crop'?'Arraste para selecionar a área que deseja manter; depois clique em Aplicar corte':state.mode==='quad'?(points.length===3?`Clique em D para usar quatro pontos ou conclua com três pontos · ${escapeLabel} cancela`:points.length===4?`Solte para criar o quadrilátero e mover os vértices · ${escapeLabel} cancela`:points.length?('Clique no vértice '+'ABCD'[points.length]+' para continuar · '+escapeLabel+' cancela'):'Arraste na vertical para faixa de largura total ou na diagonal para criar um quadrilátero; depois mova os vértices. Também pode clicar em 3 ou 4 pontos.'):'Arraste para marcar um recorte • clique em uma marcação para mover ou redimensionar'}
+    else els.canvasHint.textContent=state.retouchTool==='aiErase'?'Pinte sobre a área para apagar e reconstruir com IA':state.retouchTool==='sample'?'Clique em uma cor limpa do balão para capturar':state.retouchTool==='color'?'Pinte sobre as letras para apagá-las':state.retouchTool==='restore'?'Pinte para recuperar pixels originais':'Quadros azuis ficam bloqueados; clique nas caixas amarelas para selecionar texto';
+  }
+
+  function updateCropControls(){
+    const page=current(),active=state.mode==='crop',cropButton=$('cropImageMode'),applyButton=$('applyCropBtn'),cancelButton=$('cancelCropBtn'),restoreButton=$('restoreCropBtn');
+    cropButton.classList.toggle('active',active);cropButton.disabled=state.busy||state.ocrRunning||!page||page.isRoll;
+    applyButton.hidden=!active;applyButton.disabled=!state.cropRect||state.busy||state.ocrRunning||!page||page.isRoll;
+    cancelButton.hidden=!active;cancelButton.disabled=state.busy;
+    restoreButton.hidden=!page?.cropSnapshot;restoreButton.disabled=state.busy||state.ocrRunning;
+  }
+  function renderOverlay(){
+    const page=current();if(!page||!page.width)return;
+    const coarsePointer=!!window.matchMedia?.('(pointer:coarse)').matches,resizeHandleRadius=coarsePointer?10:6,vertexHandleRadius=coarsePointer?12:7;
+    const chunks=[],letters='ABCDEFGH',splitMarks=[...(state.splitMarks.get(page.id)||[])].sort((a,b)=>a-b);els.overlay.classList.toggle('split-marking',state.activeTab==='cuts'&&state.mode==='splitmark');
+    if(state.activeTab==='cuts')page.boxes.forEach((box,i)=>{
+      const selected=box.id===state.selectedId,markId=escSvg(box.id);
+      const shape=box.points?.length>=3
+        ?`<polygon class="selection${selected?' selected':''}" points="${box.points.map(point=>point.x+','+point.y).join(' ')}" data-mark-id="${markId}"></polygon>`
+        :`<rect class="selection${selected?' selected':''}" x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" rx="2" data-mark-id="${markId}"></rect>`;
+      const handles=selected&&box.points?.length>=3?box.points.map((point,index)=>`<circle class="handle vertex-handle" cx="${point.x}" cy="${point.y}" r="${vertexHandleRadius}" data-vertex-index="${index}" data-mark-id="${markId}"></circle><text class="vertex-label" x="${point.x+9}" y="${point.y-9}">${letters[index]||index+1}</text>`).join('')
+        :selected?[[box.x,box.y,'nw'],[box.x+box.w,box.y,'ne'],[box.x,box.y+box.h,'sw'],[box.x+box.w,box.y+box.h,'se']].map(([x,y,k])=>`<circle class="handle" cx="${x}" cy="${y}" r="${resizeHandleRadius}" data-handle="${k}" data-mark-id="${markId}"></circle>`).join(''):'';
+      chunks.push(`<g data-mark-id="${markId}">${shape}<text class="selection-label" x="${box.x+8}" y="${box.y+20}">${i+1}</text>${handles}</g>`);
+    });
+    if(state.activeTab==='text')page.boxes.forEach((box,index)=>{
+      const shape=box.points?.length>=3
+        ?`<polygon class="locked-panel-mark" points="${box.points.map(point=>point.x+','+point.y).join(' ')}"><title>Marcação do recorte · bloqueada nesta aba</title></polygon>`
+        :`<rect class="locked-panel-mark" x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" rx="2"><title>Marcação do recorte · bloqueada nesta aba</title></rect>`;
+      chunks.push(`<g aria-label="Quadro ${index+1}, marcação bloqueada">${shape}<text class="locked-panel-label" x="${box.x+8}" y="${box.y+20}">${index+1}</text></g>`);
+    });
+    if(state.activeTab==='text')detectionsForPage(page).filter(item=>!item.box.removed).forEach(item=>{
+      const b=item.box;chunks.push(`<rect class="ocr-box${b.selected?' selected':''}" x="${item.x}" y="${item.y}" width="${item.w}" height="${item.h}" rx="2" data-text-id="${escSvg(b.id)}"><title>${escSvg(b.text)}</title></rect>`);
+    });
+    const quad=state.quadDraft?.pageId===page.id?state.quadDraft.points:[];
+    if(state.activeTab==='cuts'&&state.mode==='quad'&&quad.length){
+      if(quad.length===4)chunks.push(`<polygon class="draft" points="${quad.map(point=>point.x+','+point.y).join(' ')}"></polygon>`);else if(quad.length>=2)chunks.push(`<polyline class="quad-draft-line" points="${quad.map(point=>point.x+','+point.y).join(' ')}"></polyline>`);
+      quad.forEach((point,index)=>chunks.push(`<circle class="quad-draft-point" cx="${point.x}" cy="${point.y}" r="6"></circle><text class="vertex-label" x="${point.x+9}" y="${point.y-9}">${letters[index]}</text>`));
+    }
+    if(state.activeTab==='cuts')splitMarks.forEach((y,index)=>chunks.push(`<line class="split-cut-mark" x1="0" y1="${y}" x2="${page.width}" y2="${y}"></line><text class="split-cut-label" x="8" y="${Math.max(18,y-7)}">Corte ${index+1}</text>`));
+    if(state.cropRect){const d=state.cropRect;chunks.push(`<rect class="crop-selection" x="${d.x}" y="${d.y}" width="${d.w}" height="${d.h}" rx="2"></rect>`)}
+    if(state.draft){const d=state.draft;chunks.push(`<rect class="${state.mode==='crop'?'crop-selection':'draft'}" x="${d.x}" y="${d.y}" width="${d.w}" height="${d.h}" rx="2"></rect>`)}
+    if(state.brushDraft?.length){const points=state.brushDraft;const d=points.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' ');const color=state.drag?.tool==='restore'?'#e05c5c':state.drag?.tool==='aiErase'?'#8157e5':state.brushColor||'#22a984';chunks.push(`<path class="brush-draft" d="${d}" style="stroke:${escSvg(color)};stroke-width:${state.brushSize};"></path>`)}
+    els.overlay.innerHTML=chunks.join('');
+  }
+
+  function parseOcrLines(data){
+    const fromBox=(text,bbox,confidence)=>({text:text||'',x:bbox?.x0??0,y:bbox?.y0??0,w:(bbox?.x1??0)-(bbox?.x0??0),h:(bbox?.y1??0)-(bbox?.y0??0),confidence:Number(confidence)||0});
+    if(Array.isArray(data.lines)&&data.lines.length){const lines=data.lines.map(line=>fromBox(line.text||(line.words||[]).map(word=>word.text).join(' '),line.bbox,line.confidence));if(lines.some(line=>line.text&&line.w>0&&line.h>0))return lines}
+    const blockLines=Array.isArray(data.blocks)?data.blocks.flatMap(block=>(block.paragraphs||[]).flatMap(paragraph=>paragraph.lines||[])):[];
+    if(blockLines.length){const lines=blockLines.map(line=>fromBox(line.text||(line.words||[]).map(word=>word.text).join(' '),line.bbox,line.confidence));if(lines.some(line=>line.text&&line.w>0&&line.h>0))return lines}
+    if(typeof data.tsv!=='string'||!data.tsv.trim())return[];
+    const rows=data.tsv.replace(/^\uFEFF/,'').trim().split(/\r?\n/),header=(rows.shift()||'').split('\t').map(name=>name.trim().toLowerCase()),idx=Object.fromEntries(header.map((name,i)=>[name,i]));
+    if(idx.level==null||idx.text==null)return[];
+    const groups=new Map();
+    for(const row of rows){const c=row.split('\t'),text=(c[idx.text]||'').trim();if(!text||Number(c[idx.level])!==5)continue;
+      const key=[c[idx.block_num],c[idx.par_num],c[idx.line_num]].join(':');let g=groups.get(key);
+      const x=Number(c[idx.left])||0,y=Number(c[idx.top])||0,w=Number(c[idx.width])||0,h=Number(c[idx.height])||0,confidence=Number(c[idx.conf])||0;
+      if(!g){g={text:'',x,y,right:x+w,bottom:y+h,confidence:0,count:0};groups.set(key,g)}
+      g.text+=(g.text?' ':'')+text;g.x=Math.min(g.x,x);g.y=Math.min(g.y,y);g.right=Math.max(g.right,x+w);g.bottom=Math.max(g.bottom,y+h);g.confidence+=confidence;g.count++;
+    }
+    return Array.from(groups.values()).map(g=>({text:g.text,x:g.x,y:g.y,w:g.right-g.x,h:g.bottom-g.y,confidence:g.count?g.confidence/g.count:0}));
+  }
+  function ocrTileSettings(source){
+    const scale=Math.min(2,Math.max(1,1500/source.width));
+    const tileHeight=Math.max(400,Math.min(1400,Math.floor(3000000/(source.width*scale*scale))));
+    const overlap=Math.min(120,Math.floor(tileHeight/10));
+    return{scale,tileHeight,overlap,step:Math.max(1,tileHeight-overlap)};
+  }
+  function makeOcrTile(image,source,top,height,scale){
+    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(height*scale));
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.drawImage(image,0,top,source.width,height,0,0,canvas.width,canvas.height);
+    return canvas;
+  }
+  async function invertOcrTile(canvas){
+    const ctx=canvas.getContext('2d'),image=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const chunk=4*500000;for(let start=0;start<image.data.length;start+=chunk){const end=Math.min(image.data.length,start+chunk);for(let i=start;i<end;i+=4){image.data[i]=255-image.data[i];image.data[i+1]=255-image.data[i+1];image.data[i+2]=255-image.data[i+2]}if(end<image.data.length)await yieldToBrowser()}
+    ctx.putImageData(image,0,0);return canvas;
+  }
+  async function enhanceOcrTile(source){
+    const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0);
+    const image=ctx.getImageData(0,0,canvas.width,canvas.height),histogram=new Uint32Array(256);let total=0;
+    const chunk=4*500000;for(let start=0;start<image.data.length;start+=chunk){const end=Math.min(image.data.length,start+chunk);for(let i=start;i<end;i+=4){const gray=Math.round(image.data[i]*.299+image.data[i+1]*.587+image.data[i+2]*.114);histogram[gray]++;total++}if(end<image.data.length)await yieldToBrowser()}
+    const percentile=target=>{let count=0;for(let i=0;i<256;i++){count+=histogram[i];if(count>=target)return i}return 255};
+    const low=percentile(total*.015),high=percentile(total*.985),range=Math.max(1,high-low);
+    for(let start=0;start<image.data.length;start+=chunk){const end=Math.min(image.data.length,start+chunk);for(let i=start;i<end;i+=4){const gray=Math.max(0,Math.min(255,Math.round((image.data[i]*.299+image.data[i+1]*.587+image.data[i+2]*.114-low)*255/range)));image.data[i]=image.data[i+1]=image.data[i+2]=gray}if(end<image.data.length)await yieldToBrowser()}
+    ctx.putImageData(image,0,0);return canvas;
+  }
+  function usableOcrLines(data){
+    const cjk=/^(jpn|kor|chi)/.test(els.ocrLanguage.value);
+    const shortDialogueWords=new Set(['eu','de','do','da','no','na','ao','os','as','um','oh','ah','oi','ai','ei','se','me','te','tu','he','we','it','is','to','of','my','am','go','up','ok']);
+    return parseOcrLines(data).filter(line=>{
+      const text=line.text.trim(),tokens=text.match(/[\p{L}\p{N}]+/gu)||[],words=text.match(/\p{L}+/gu)||[],letters=text.match(/\p{L}/gu)||[],confidence=Number(line.confidence)||0;
+      if(!tokens.length||letters.length<2||line.w<8||line.h<5)return false;
+      if(!cjk&&(line.h>150||line.w/Math.max(1,line.h)<1.45))return false;
+      if(cjk){if(confidence<48)return false}
+      else{
+        const vowels=(text.match(/[aeiouáéíóúàâêôãõü]/giu)||[]).length,vowelRatio=vowels/Math.max(1,letters.length);
+        const vowelWords=words.filter(word=>/[aeiouáéíóúàâêôãõü]/iu.test(word)).length;
+        if(words.length===1){
+          const onlyWord=words[0].toLocaleLowerCase(),shortWord=letters.length<3;
+          if((shortWord&&!shortDialogueWords.has(onlyWord))||confidence<(shortWord?78:70)||vowelRatio<.12)return false;
+        }else{
+          if(confidence<48||vowelWords<Math.ceil(words.length*.55))return false;
+          if(letters.length>=7&&vowelRatio<.14&&confidence<76)return false;
+        }
+      }
+      return true;
+    });
+  }
+  async function recognizeOcrTile(worker,canvas){
+    const options=mode=>({tessedit_pageseg_mode:String(mode),preserve_interword_spaces:'1',user_defined_dpi:'300'}),read=async(image,mode)=>{
+      const result=await withOcrTimeout(worker.recognize(image,options(mode),{tsv:true,blocks:true}),120000,'A leitura deste trecho');
+      return usableOcrLines(result.data);
+    };
+    const sparse=await read(canvas,11);let block=[];try{block=await read(canvas,6)}catch(error){console.warn('A leitura alternativa do trecho não ficou disponível.',error)}
+    const blockExtras=block.filter(line=>line.confidence>=68&&isNearbyOcrContinuation(line,sparse));let lines=removeDuplicateLines([...sparse,...blockExtras]);
+    const enhanced=await enhanceOcrTile(canvas);let enhancedLines=[];try{enhancedLines=await read(enhanced,11)}catch(error){console.warn('A leitura com contraste reforçado não ficou disponível.',error)}
+    lines=removeDuplicateLines([...lines,...enhancedLines.filter(line=>line.confidence>=72&&isNearbyOcrContinuation(line,lines))]);
+    if(lines.length)return lines;
+    return read(await invertOcrTile(enhanced),11);
+  }
+  function removeDuplicateLines(lines){
+    const sorted=[...lines].sort((a,b)=>b.confidence-a.confidence),kept=[];
+    for(const line of sorted){
+      const duplicate=kept.some(other=>{
+        const left=Math.max(line.x,other.x),top=Math.max(line.y,other.y),right=Math.min(line.x+line.w,other.x+other.w),bottom=Math.min(line.y+line.h,other.y+other.h);
+        const intersection=Math.max(0,right-left)*Math.max(0,bottom-top),smaller=Math.min(line.w*line.h,other.w*other.h),smallHeight=Math.min(line.h,other.h),largeHeight=Math.max(line.h,other.h),verticalOverlap=Math.max(0,bottom-top);
+        return smaller>0&&intersection/smaller>.58&&smallHeight>0&&verticalOverlap/smallHeight>.58&&largeHeight/smallHeight<1.8;
+      });
+      if(!duplicate)kept.push(line);
+    }
+    return kept.sort((a,b)=>a.y-b.y||a.x-b.x);
+  }
+  function isNearbyOcrContinuation(line,anchors){
+    if(!anchors.length)return line.confidence>=84;
+    const lineCenterX=line.x+line.w/2,lineRight=line.x+line.w,lineBottom=line.y+line.h;
+    return anchors.some(anchor=>{
+      const height=Math.max(line.h,anchor.h),verticalGap=Math.max(0,Math.max(line.y,anchor.y)-Math.min(lineBottom,anchor.y+anchor.h)),horizontalGap=Math.max(0,Math.max(line.x,anchor.x)-Math.min(lineRight,anchor.x+anchor.w)),centerGap=Math.abs(lineCenterX-(anchor.x+anchor.w/2)),limit=Math.max(56,height*3.5);
+      return verticalGap<=limit&&(horizontalGap<=Math.max(96,height*5)||centerGap<=limit);
+    });
+  }
+  function withOcrTimeout(promise,milliseconds,label){
+    return new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>{const error=new Error(`${label} está demorando demais. Confira a conexão e tente novamente.`);error.code='OCR_TIMEOUT';reject(error)},milliseconds);
+      Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(value)},error=>{clearTimeout(timer);reject(error)});
+    });
+  }
+  function setOcrStatus(message,progress){
+    els.ocrStatus.textContent=message;
+    if(progress!=null){els.ocrProgress.hidden=false;els.ocrProgressBar.style.width=`${Math.max(0,Math.min(100,Math.round(progress*100)))}%`}
+  }
+  function ocrProgressMessage(message){
+    const labels={'loading tesseract core':'Preparando o mecanismo de leitura','initializing tesseract':'Iniciando o reconhecimento','loading language traineddata':'Baixando o idioma','initializing api':'Preparando o idioma','recognizing text':'Lendo texto','loading image':'Preparando a imagem'};
+    const label=labels[message.status]||'Preparando o reconhecimento';
+    return `${label}${message.progress!=null?` · ${Math.round(message.progress*100)}%`:''}`;
+  }
+  async function loadTesseract(){
+    if(window.Tesseract)return window.Tesseract;
+    if(!state.ocrLoader)state.ocrLoader=(async()=>{
+      const mirrors=[
+        {base:'https://cdn.jsdelivr.net/npm',script:'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js'},
+        {base:'https://unpkg.com',script:'https://unpkg.com/tesseract.js@7.0.0/dist/tesseract.min.js'}
+      ];
+      let lastError;
+      for(const mirror of mirrors){
+        setOcrStatus('Carregando a ferramenta de leitura…');
+        try{
+          await withOcrTimeout(new Promise((resolve,reject)=>{
+            const script=document.createElement('script');let settled=false;script.src=mirror.script;script.async=true;script.crossOrigin='anonymous';
+            const timer=setTimeout(()=>{if(settled)return;settled=true;script.remove();reject(new Error('O download da ferramenta de leitura expirou.'))},25000);
+            script.onload=()=>{if(settled)return;settled=true;clearTimeout(timer);window.Tesseract?resolve():reject(new Error('A ferramenta de leitura não iniciou.'))};
+            script.onerror=()=>{if(settled)return;settled=true;clearTimeout(timer);script.remove();reject(new Error('Não foi possível baixar a ferramenta de leitura.'))};
+            document.head.appendChild(script);
+          }),28000,'O carregamento da ferramenta de leitura');
+          state.ocrAssetBase=mirror.base;return window.Tesseract;
+        }catch(error){lastError=error}
+      }
+      throw new Error(`${lastError?.message||'Não foi possível carregar a ferramenta de leitura.'} Verifique a conexão com a internet.`);
+    })().catch(error=>{state.ocrLoader=null;throw error});
+    return withOcrTimeout(state.ocrLoader,60000,'O carregamento da biblioteca OCR');
+  }
+  function paddleLanguageCode(language){return({'por+eng':'pt',por:'pt',eng:'en',jpn:'japan',kor:'korean',chi_sim:'ch',chi_tra:'chinese_cht'})[language]||'pt'}
+  async function disposePaddleOcr(){
+    const old=state.paddleOcr;state.paddleOcr=null;state.paddleOcrLang=null;
+    if(old){try{await old.dispose()}catch(error){console.warn('Não foi possível liberar o motor acelerado.',error)}}
+  }
+  async function loadPaddleOcr(language){
+    const code=paddleLanguageCode(language);
+    if(state.paddleOcr&&state.paddleOcrLang===code)return state.paddleOcr;
+    if(state.paddleOcr)await disposePaddleOcr();
+    if(!state.paddleOcrLoader)state.paddleOcrLoader=(async()=>{
+      let lastError;
+      for(const url of ['https://cdn.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/+esm','https://esm.sh/@paddleocr/paddleocr-js@0.4.2?bundle']){
+        try{return await withOcrTimeout(import(url),12000,'O download do motor acelerado')}catch(error){lastError=error}
+      }
+      throw lastError||new Error('Não foi possível carregar o motor acelerado.');
+    })().catch(error=>{state.paddleOcrLoader=null;throw error});
+    const moduleSlowTimer=setTimeout(()=>setOcrStatus('Baixando o motor acelerado. Se não iniciar, o app usará o motor de compatibilidade…'),10000);
+    let PaddleOCR;
+    try{({PaddleOCR}=await withOcrTimeout(state.paddleOcrLoader,30000,'O carregamento do motor acelerado'))}
+    finally{clearTimeout(moduleSlowTimer)}
+    const threads=window.crossOriginIsolated?Math.max(1,Math.min(2,(navigator.hardwareConcurrency||4)-1)):1;
+    const creation=PaddleOCR.create({lang:code,ocrVersion:'PP-OCRv6',worker:true,textDetectionBatchSize:1,textRecognitionBatchSize:4,ortOptions:{backend:'auto',numThreads:threads,simd:true}});
+    let creationTimedOut=false;
+    creation.then(engine=>{if(creationTimedOut)Promise.resolve(engine.dispose()).catch(()=>{})}).catch(()=>{});
+    const slowLoadTimer=setTimeout(()=>setOcrStatus('O primeiro carregamento está baixando os modelos. Se não concluir em breve, vou usar o motor de compatibilidade…'),10000);
+    try{
+      const engine=await withOcrTimeout(creation,45000,`A preparação do motor para ${code}`);
+      state.paddleOcr=engine;state.paddleOcrLang=code;return engine;
+    }catch(error){if(error.code==='OCR_TIMEOUT')creationTimedOut=true;throw error}
+    finally{clearTimeout(slowLoadTimer)}
+  }
+  async function recognizePaddleTile(engine,canvas){
+    const read=async(image)=>{
+      const results=await withOcrTimeout(engine.predict(image),120000,'A leitura deste trecho'),items=results?.[0]?.items||[];
+      const lines=items.map(item=>{
+        const points=Array.isArray(item.poly)?item.poly.filter(point=>Array.isArray(point)&&point.length>=2):[];
+        if(!points.length)return null;
+        const xs=points.map(point=>Number(point[0])).filter(Number.isFinite),ys=points.map(point=>Number(point[1])).filter(Number.isFinite);
+        if(!xs.length||!ys.length)return null;
+        const score=Number(item.score)||0;
+        return{text:item.text||'',x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys),confidence:score<=1?score*100:score};
+      }).filter(Boolean);
+      return usableOcrLines({lines});
+    };
+    const normal=await read(canvas);let enhanced=[];try{enhanced=await read(await enhanceOcrTile(canvas))}catch(error){console.warn('A segunda leitura do trecho não ficou disponível; mantendo a primeira.',error)}
+    return removeDuplicateLines([...normal,...enhanced.filter(line=>line.confidence>=72&&isNearbyOcrContinuation(line,normal))]);
+  }
+  async function disposeTesseractWorker(){
+    const old=state.ocrWorker;state.ocrWorker=null;state.ocrLang=null;
+    if(old){try{await old.terminate()}catch(error){console.warn('Não foi possível liberar o motor compatível.',error)}}
+  }
+  async function getTesseractWorker(lang,languageName){
+    const api=await loadTesseract();
+    if(state.ocrWorker&&state.ocrLang!==lang)await disposeTesseractWorker();
+    if(!state.ocrWorker){
+      setOcrStatus(`Baixando o idioma ${languageName} para a primeira leitura…`);
+      let creationTimedOut=false;
+      const creation=api.createWorker(lang,1,{
+        workerPath:`${state.ocrAssetBase}/tesseract.js@7.0.0/dist/worker.min.js`,
+        corePath:`${state.ocrAssetBase}/tesseract.js-core@7.0.0`,
+        langPath:'https://tessdata.projectnaptha.com/4.0.0',
+        logger:message=>{if(message.status)setOcrStatus(ocrProgressMessage(message),message.progress)},
+        errorHandler:error=>{console.error(error);setOcrStatus(`Falha no mecanismo OCR: ${error?.message||error}`)}
+      });
+      creation.then(worker=>{if(creationTimedOut)worker.terminate().catch(()=>{})}).catch(()=>{});
+      try{state.ocrWorker=await withOcrTimeout(creation,180000,`O download do idioma ${languageName}`);state.ocrLang=lang}
+      catch(error){if(error.code==='OCR_TIMEOUT')creationTimedOut=true;throw error}
+    }
+    return state.ocrWorker;
+  }
+  function sampleSpeechBubbleBackground(image,source,line){
+    const lineHeight=Math.max(1,line.h),padX=Math.max(12,Math.min(90,lineHeight*1.35)),padY=Math.max(8,Math.min(48,lineHeight*.72));
+    const left=Math.max(0,line.x-padX),top=Math.max(0,line.y-padY),right=Math.min(source.width,line.x+line.w+padX),bottom=Math.min(source.height,line.y+line.h+padY),cropWidth=right-left,cropHeight=bottom-top;
+    if(cropWidth<2||cropHeight<2)return null;
+    const scale=Math.min(1,160/cropWidth,112/cropHeight),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(cropWidth*scale));canvas.height=Math.max(1,Math.round(cropHeight*scale));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)return null;
+    ctx.drawImage(image,left,top,cropWidth,cropHeight,0,0,canvas.width,canvas.height);
+    const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data,sx=canvas.width/cropWidth,sy=canvas.height/cropHeight;
+    const inkLeft=(line.x-left)*sx,inkTop=(line.y-top)*sy,inkRight=(line.x+line.w-left)*sx,inkBottom=(line.y+line.h-top)*sy,guard=Math.max(1,lineHeight*.14*Math.min(sx,sy));
+    const channels=[[],[],[]],ringPixels=[];
+    for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
+      if(x>=inkLeft-guard&&x<=inkRight+guard&&y>=inkTop-guard&&y<=inkBottom+guard)continue;
+      const p=(y*canvas.width+x)*4;if(pixels[p+3]<210)continue;
+      const rgb=[pixels[p],pixels[p+1],pixels[p+2]];ringPixels.push(rgb);for(let c=0;c<3;c++)channels[c].push(rgb[c]);
+    }
+    if(ringPixels.length<40)return null;
+    const median=values=>{const sorted=[...values].sort((a,b)=>a-b);return sorted[Math.floor(sorted.length/2)]},base=channels.map(median),inliers=[],backgroundSamples=[];
+    for(const rgb of ringPixels){
+      const distance=Math.max(Math.abs(rgb[0]-base[0]),Math.abs(rgb[1]-base[1]),Math.abs(rgb[2]-base[2]));
+      if(distance>78)continue;backgroundSamples.push(rgb);if(distance<=30)inliers.push(rgb);
+    }
+    const usableRatio=backgroundSamples.length/ringPixels.length,uniformity=backgroundSamples.length?inliers.length/backgroundSamples.length:0;
+    if(usableRatio<.55||uniformity<.72)return null;
+    const color=[0,1,2].map(channel=>Math.round(inliers.reduce((sum,rgb)=>sum+rgb[channel],0)/inliers.length));
+    let inkCount=0,contrasting=0;
+    for(let y=Math.max(0,Math.floor(inkTop));y<Math.min(canvas.height,Math.ceil(inkBottom));y++)for(let x=Math.max(0,Math.floor(inkLeft));x<Math.min(canvas.width,Math.ceil(inkRight));x++){
+      const p=(y*canvas.width+x)*4;if(pixels[p+3]<210)continue;inkCount++;
+      if(Math.max(Math.abs(pixels[p]-color[0]),Math.abs(pixels[p+1]-color[1]),Math.abs(pixels[p+2]-color[2]))>48)contrasting++;
+    }
+    const inkRatio=inkCount?contrasting/inkCount:0;if(inkRatio<.012||inkRatio>.7)return null;
+    return{color,uniformity,usableRatio};
+  }
+  async function scanOcrSources(sources,recognize,engineLabel){
+    const results=new Map();
+    for(let i=0;i<sources.length;i++){
+      const source=sources[i];await ensureDimensions(source);const settings=ocrTileSettings(source),original=await loadImage(source.url),lines=[];
+      const tileCount=Math.ceil(source.height/settings.step);let tile=0;
+      for(let top=0;top<source.height;top+=settings.step){
+        const height=Math.min(settings.tileHeight,source.height-top),canvas=makeOcrTile(original,source,top,height,settings.scale);
+        setOcrStatus(`Lendo ${source.name} (${i+1}/${sources.length}) · trecho ${tile+1}/${tileCount} · ${engineLabel}…`,(i+tile/tileCount)/sources.length);
+        const tileLines=await recognize(canvas);
+        tileLines.forEach(line=>lines.push({...line,x:line.x/settings.scale,y:top+line.y/settings.scale,w:line.w/settings.scale,h:line.h/settings.scale}));
+        tile++;els.ocrProgressBar.style.width=`${Math.round((i+tile/tileCount)/sources.length*100)}%`;await yieldToBrowser();
+      }
+      const cleaned=removeDuplicateLines(lines),bubbleLines=[];
+      for(const line of cleaned){
+        const x=Math.max(0,line.x),y=Math.max(0,line.y),w=Math.min(source.width,Math.max(0,line.x+line.w))-x,h=Math.min(source.height,Math.max(0,line.y+line.h))-y;
+        if(w<1||h<1)continue;
+        const bubble=sampleSpeechBubbleBackground(original,source,{x,y,w,h});if(!bubble)continue;
+        const confident=line.confidence>=82&&bubble.uniformity>=.84&&bubble.usableRatio>=.7;
+        bubbleLines.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,text:line.text.trim(),x,y,w,h,confidence:line.confidence,sourcePage:source,bubbleColor:bubble.color,bubbleScore:bubble.uniformity,autoCleanEligible:confident,selected:confident,removed:false});
+      }
+      results.set(source,bubbleLines);await yieldToBrowser();
+    }
+    return results;
+  }
+  async function detectText(requestedSources=null){
+    if(state.busy){notify('Aguarde o processamento atual terminar.');return}
+    const page=current();
+    if(!page){setOcrStatus('Adicione uma imagem antes de iniciar a detecção.');notify('Adicione uma imagem primeiro.');return}
+    if(location.protocol==='file:'){setOcrStatus('A leitura automática exige o servidor local. No Windows, abra “Iniciar Quadro.cmd”; no Mac, execute “python3 start_quadro_server.py” na pasta do app.');notify('Inicie a ferramenta pelo lançador do seu sistema e abra o endereço local no navegador.');return}
+    const sources=Array.isArray(requestedSources)?requestedSources:(state.scanAllPages.checked?allSources():(page.isRoll?page.segments.map(s=>s.page):[page]));
+    const unique=Array.from(new Map(sources.map(source=>[source.id,source])).values());
+    if(!unique.length){setOcrStatus('Não encontrei páginas para ler. Adicione uma imagem e tente novamente.');return}
+    const lang=els.ocrLanguage.value,languageName=els.ocrLanguage.options[els.ocrLanguage.selectedIndex]?.textContent||lang;let usedEngine='';
+    state.busy=true;state.ocrRunning=true;els.detectTextBtn.textContent='Preparando leitura…';els.ocrProgress.hidden=false;els.ocrProgressBar.style.width='0%';els.ocrStatus.textContent='Preparando a leitura…';updateCounts();
+    try{
+      let results;
+      if(els.ocrEngine.value==='accelerated'){
+        await disposeTesseractWorker();
+        try{
+          setOcrStatus('Preparando o motor local com GPU automática…');
+          const engine=await loadPaddleOcr(lang),summary=engine.getInitializationSummary?.()||{},gpu=summary.detProvider==='webgpu'||summary.recProvider==='webgpu';
+          usedEngine=gpu?'GPU WebGPU':'processador WASM';
+          results=await scanOcrSources(unique,canvas=>recognizePaddleTile(engine,canvas),usedEngine);
+        }catch(engineError){
+          console.warn('Motor local acelerado indisponível; usando o mecanismo compatível.',engineError);await disposePaddleOcr();
+          setOcrStatus('Motor acelerado indisponível. Alternando para o processador…');els.ocrProgressBar.style.width='0%';
+          const worker=await getTesseractWorker(lang,languageName);usedEngine='Tesseract no processador';
+          results=await scanOcrSources(unique,canvas=>recognizeOcrTile(worker,canvas),usedEngine);
+        }
+      }else{
+        await disposePaddleOcr();const worker=await getTesseractWorker(lang,languageName);usedEngine='Tesseract no processador';
+        results=await scanOcrSources(unique,canvas=>recognizeOcrTile(worker,canvas),usedEngine);
+      }
+      for(const [source,boxes] of results)source.textBoxes=boxes;
+      const count=unique.reduce((sum,source)=>sum+source.textBoxes.length,0);
+      const autoClean=unique.flatMap(source=>(source.textBoxes||[]).filter(box=>box.autoCleanEligible&&box.selected&&!box.removed));
+      const grouped=new Map();
+      for(const box of autoClean){
+        const source=box.sourcePage,padX=Math.max(2,Math.min(5,Math.round(box.h*.1))),padY=Math.max(2,Math.min(5,Math.round(box.h*.1))),x=Math.max(0,Math.floor(box.x-padX)),y=Math.max(0,Math.floor(box.y-padY)),right=Math.min(source.width,Math.ceil(box.x+box.w+padX)),bottom=Math.min(source.height,Math.ceil(box.y+box.h+padY));
+        if(!grouped.has(source))grouped.set(source,[]);grouped.get(source).push({x,y,w:right-x,h:bottom-y,color:box.bubbleColor});
+      }
+      const changes=Array.from(grouped,([source,rects])=>({source,op:{type:'fillText',automatic:true,rects}}));
+      let cleanedCount=0;
+      if(autoClean.length){
+        state.busy=false;updateCounts();setOcrStatus(`Aplicando limpeza rápida sem IA em ${autoClean.length} linhas…`,1);
+        await commitEdits(changes,autoClean);cleanedCount=autoClean.filter(box=>box.removed).length;
+      }else{renderTextList();renderOverlay()}
+      setOcrStatus(count?`Leitura concluída: ${count} linhas identificadas em balões; ${cleanedCount} limpas sem IA${count>cleanedCount?`; ${count-cleanedCount} para conferir`:''}. Motor: ${usedEngine}.`:`Não encontrei texto legível em balões com ${usedEngine}. Tente outro idioma ou confira se o texto está legível.`,1);
+      notify(count?`Leitura concluída: ${count} ${count===1?'linha':'linhas'} em balões; ${cleanedCount} limpas sem IA${count>cleanedCount?`, ${count-cleanedCount} para conferir`:''}.`:`Leitura concluída: nenhum texto em balões encontrado (${usedEngine}).`);
+    }catch(error){
+      console.error(error);setOcrStatus(`Não foi possível detectar: ${error?.message||'falha desconhecida'}`);notify('Não foi possível iniciar a detecção. Veja o aviso abaixo do botão.');
+      await disposeTesseractWorker();await disposePaddleOcr();
+    }finally{
+      state.ocrRunning=false;state.busy=false;els.detectTextBtn.textContent='Ler novamente';updateCounts();setTimeout(()=>{els.ocrProgress.hidden=true;els.ocrProgressBar.style.width='0%'},900);if(pendingAutoScanPages.length)schedulePendingAutoScan();
+    }
+  }
+  const INPAINT_MODEL_URL='https://huggingface.co/opencv/inpainting_lama/resolve/c47be270660574005b6c951b5904f51a1af28f6d/inpainting_lama_2025jan.onnx';
+  const INPAINT_MODEL_KEY='opencv-lama-2025jan-pinned-v1';
+  const ORT_VERSION='1.30.0';
+  function openInpaintDb(){
+    return new Promise((resolve,reject)=>{
+      const request=indexedDB.open('quadro-inpaint-cache',1);
+      request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('models'))request.result.createObjectStore('models')};
+      request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('Cache indisponível.'));
+    });
+  }
+  async function readCachedInpaintModel(){
+    try{const db=await openInpaintDb();return await new Promise((resolve,reject)=>{const request=db.transaction('models','readonly').objectStore('models').get(INPAINT_MODEL_KEY);request.onsuccess=()=>resolve(request.result||null);request.onerror=()=>reject(request.error)}).finally(()=>db.close())}catch{return null}
+  }
+  async function cacheInpaintModel(bytes){
+    try{const db=await openInpaintDb();await new Promise((resolve,reject)=>{const tx=db.transaction('models','readwrite');tx.objectStore('models').put(bytes,INPAINT_MODEL_KEY);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(error){console.warn('Não foi possível guardar o modelo localmente.',error)}
+  }
+  function loadOrtRuntime(){
+    if(window.ort?.InferenceSession)return Promise.resolve(window.ort);
+    if(state.ortLoader)return state.ortLoader;
+    state.ortLoader=(async()=>{
+      const bases=[`https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`,`https://unpkg.com/onnxruntime-web@${ORT_VERSION}/dist/`],bundles=['ort.webgpu.min.js','ort.min.js'],failures=[];
+      for(const base of bases)for(const bundle of bundles){
+        const src=base+bundle;
+        try{
+          const ort=await new Promise((resolve,reject)=>{
+            const script=document.createElement('script');let timer=setTimeout(()=>{script.onload=script.onerror=null;script.remove();reject(new Error('tempo limite'))},20000);
+            script.src=src;script.crossOrigin='anonymous';script.onload=()=>{clearTimeout(timer);window.ort?.InferenceSession?resolve(window.ort):reject(new Error('arquivo carregado sem iniciar o mecanismo'))};script.onerror=()=>{clearTimeout(timer);script.remove();reject(new Error('origem indisponível'))};document.head.appendChild(script);
+          });
+          state.ortAssetBase=base;return ort;
+        }catch(error){failures.push(`${new URL(base).hostname}/${bundle}: ${error.message}`)}
+      }
+      console.warn('Falha ao carregar o ONNX Runtime Web por todas as fontes tentadas.',failures);
+      throw new Error('Não foi possível baixar o mecanismo de IA. Confira a internet ou libere o acesso a cdn.jsdelivr.net e unpkg.com.');
+    })().finally(()=>{state.ortLoader=null});
+    return state.ortLoader;
+  }
+  async function downloadInpaintModel(){
+    const cached=await readCachedInpaintModel();if(cached){state.inpaintModelBytes=cached;return cached}
+    const response=await fetch(INPAINT_MODEL_URL);if(!response.ok)throw new Error(`O modelo de preenchimento não pôde ser baixado (HTTP ${response.status}).`);
+    const total=Number(response.headers.get('content-length'))||0,chunks=[];let received=0;
+    if(response.body?.getReader){const reader=response.body.getReader();while(true){const {done,value}=await reader.read();if(done)break;chunks.push(value);received+=value.length;state.inpaintStatus=total?`Baixando Borracha IA… ${Math.min(99,Math.round(received/total*100))}%`:`Baixando Borracha IA… ${Math.round(received/1048576)} MB`;els.retouchStatus.textContent=state.inpaintStatus}}
+    else{const buffer=await response.arrayBuffer();chunks.push(new Uint8Array(buffer));received=buffer.byteLength}
+    const bytes=new Uint8Array(received);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}
+    state.inpaintModelBytes=bytes.buffer;await cacheInpaintModel(state.inpaintModelBytes);return state.inpaintModelBytes;
+  }
+  async function createInpaintSession(ort,modelBytes,useGpu){
+    const providers=useGpu?['webgpu','wasm']:['wasm'];
+    return ort.InferenceSession.create(modelBytes,{executionProviders:providers,graphOptimizationLevel:'all'});
+  }
+  async function ensureInpaintSession(){
+    if(state.inpaintSession)return state.inpaintSession;if(state.inpaintLoader)return state.inpaintLoader;
+    state.inpaintLoader=(async()=>{
+      state.inpaintStatus='Preparando a Borracha IA…';els.retouchStatus.textContent=state.inpaintStatus;
+      const ort=await loadOrtRuntime(),modelBytes=await downloadInpaintModel();
+      ort.env.wasm.wasmPaths=state.ortAssetBase;
+      ort.env.wasm.numThreads=window.crossOriginIsolated?Math.max(1,Math.min((navigator.hardwareConcurrency||4)-1,2)):1;
+      if(navigator.gpu){try{state.inpaintSession=await createInpaintSession(ort,modelBytes,true);state.inpaintProvider='GPU com alternativa no processador'}catch(error){console.warn('GPU indisponível para a Borracha IA; usando o processador.',error)}}
+      if(!state.inpaintSession){state.inpaintSession=await createInpaintSession(ort,modelBytes,false);state.inpaintProvider='processador'}
+      state.inpaintStatus='';return state.inpaintSession;
+    })().catch(error=>{state.inpaintLoader=null;state.inpaintStatus='';throw error});
+    return state.inpaintLoader;
+  }
+  function inpaintOutputTransform(values,inputPixels,maskPixels,count){
+    let minimum=Infinity,maximum=-Infinity;
+    for(let i=0;i<count*3;i++){const value=values[i];if(Number.isFinite(value)){minimum=Math.min(minimum,value);maximum=Math.max(maximum,value)}}
+    if(!Number.isFinite(minimum)||!Number.isFinite(maximum))return{scale:1,bias:0};
+    const candidates=[{scale:1,bias:0}];
+    if(maximum<=1.5&&minimum>=-1.5){candidates.push({scale:255,bias:0},{scale:127.5,bias:127.5})}
+    let best=candidates[0],bestError=Infinity,bestSamples=0;const step=Math.max(1,Math.floor(count/4096));
+    for(const candidate of candidates){let error=0,samples=0;
+      for(let i=0;i<count;i+=step){const p=i*4;if(maskPixels[p+3]>0)continue;
+        const r=values[count*2+i]*candidate.scale+candidate.bias,g=values[count+i]*candidate.scale+candidate.bias,b=values[i]*candidate.scale+candidate.bias;
+        if(!Number.isFinite(r)||!Number.isFinite(g)||!Number.isFinite(b))continue;
+        error+=Math.abs(r-inputPixels[p])+Math.abs(g-inputPixels[p+1])+Math.abs(b-inputPixels[p+2]);samples++;
+      }
+      const mean=samples?error/(samples*3):Infinity;if(mean<bestError){best=candidate;bestError=mean;bestSamples=samples}
+    }
+    if(bestSamples<8&&maximum<=1.5)return minimum<0?{scale:127.5,bias:127.5}:{scale:255,bias:0};
+    return best;
+  }
+  function inpaintOutputLooksWhite(output,inputPixels,maskPixels){
+    const tensor=output?.[Object.keys(output||{})[0]],values=tensor?.data;if(!values?.length||!inputPixels?.length||!maskPixels?.length)return false;
+    const count=Math.min(inputPixels.length/4,Math.floor(values.length/3)),side=Math.round(Math.sqrt(maskPixels.length/4)),{scale,bias}=inpaintOutputTransform(values,inputPixels,maskPixels,count),threshold=247;
+    let white=0,samples=0,originalDetail=0,unmasked=0,masked=0,maskedWhite=0,maskedDetail=0,maskedPaper=0,minX=side,minY=side,maxX=-1,maxY=-1;
+    for(let i=0;i<count;i++){
+      const p=i*4,x=i%side,y=Math.floor(i/side),isMasked=maskPixels[p+3]>0;
+      const r=values[count*2+i]*scale+bias,g=values[count+i]*scale+bias,b=values[i]*scale+bias;
+      const isWhite=r>=threshold&&g>=threshold&&b>=threshold,hasSourceDetail=Math.min(inputPixels[p],inputPixels[p+1],inputPixels[p+2])<232;
+      if(isMasked){masked++;if(isWhite)maskedWhite++;if(hasSourceDetail)maskedDetail++;if(Math.min(inputPixels[p],inputPixels[p+1],inputPixels[p+2])>222&&Math.max(inputPixels[p],inputPixels[p+1],inputPixels[p+2])-Math.min(inputPixels[p],inputPixels[p+1],inputPixels[p+2])<40)maskedPaper++;minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y);continue}
+      unmasked++;if(hasSourceDetail)originalDetail++;if(isWhite)white++;samples++;
+    }
+    const wholePatchWhite=samples>0&&white/samples>=.985&&unmasked>0&&originalDetail/unmasked>=.03;
+    if(wholePatchWhite)return true;
+    if(masked<32||maxX<minX||maxY<minY||maskedWhite/masked<.92||maskedDetail/masked<.04)return false;
+    if(maskedPaper/masked>=.45)return false;
+    const pad=18,left=Math.max(0,minX-pad),right=Math.min(side-1,maxX+pad),top=Math.max(0,minY-pad),bottom=Math.min(side-1,maxY+pad);let context=0,contextNonWhite=0;
+    for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++){const p=(y*side+x)*4;if(maskPixels[p+3]>0)continue;context++;if(Math.min(inputPixels[p],inputPixels[p+1],inputPixels[p+2])<232)contextNonWhite++}
+    return context>=16&&contextNonWhite/context>=.65;
+  }
+  async function runInpaintOnCpu(ort,imageTensor,maskTensor,message){
+    try{state.inpaintSession?.release?.()}catch{}state.inpaintSession=null;state.inpaintLoader=null;state.inpaintProvider='processador';
+    state.inpaintStatus=message;els.retouchStatus.textContent=message;
+    state.inpaintSession=await createInpaintSession(ort,state.inpaintModelBytes,false);
+    return state.inpaintSession.run({image:imageTensor,mask:maskTensor});
+  }
+  async function runInpaintModel(imageTensor,maskTensor,inputPixels,maskPixels){
+    await ensureInpaintSession();const ort=window.ort;let output;
+    try{output=await state.inpaintSession.run({image:imageTensor,mask:maskTensor})}
+    catch(error){
+      if(!state.inpaintProvider.startsWith('GPU'))throw error;
+      console.warn('A GPU falhou ao reconstruir o preenchimento; tentando no processador.',error);
+      output=await runInpaintOnCpu(ort,imageTensor,maskTensor,'A GPU não reconstruiu a área corretamente; tentando no processador…');
+    }
+    if(state.inpaintProvider.startsWith('GPU')&&inpaintOutputLooksWhite(output,inputPixels,maskPixels)){
+      console.warn('A GPU retornou um preenchimento branco; repetindo a reconstrução no processador.');
+      output=await runInpaintOnCpu(ort,imageTensor,maskTensor,'A GPU gerou uma área branca; repetindo a reconstrução no processador…');
+    }
+    if(inpaintOutputLooksWhite(output,inputPixels,maskPixels))throw new Error('O modelo devolveu uma área branca mesmo no processador. Tente reduzir o tamanho do pincel e refazer o traço.');
+    return output;
+  }
+  function regionGeometry(canvas,region){
+    let left,top,right,bottom;
+    if(region.type==='brush'||region.type==='inpaintBrush'){
+      const points=(region.points||[]).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));if(!points.length)throw new Error('O traço da Borracha IA está vazio. Pinte novamente sobre a imagem.');
+      const radius=Math.max(1,Number(region.size)||1)/2;left=Math.min(...points.map(p=>p.x))-radius;top=Math.min(...points.map(p=>p.y))-radius;right=Math.max(...points.map(p=>p.x))+radius;bottom=Math.max(...points.map(p=>p.y))+radius;
+    }else{left=region.x;top=region.y;right=region.x+region.w;bottom=region.y+region.h}
+    if(!canvas.width||!canvas.height)throw new Error('A imagem original ainda não tem dimensões válidas para a Borracha IA.');
+    if(![left,top,right,bottom].every(Number.isFinite))throw new Error('Não foi possível calcular a área do retoque. Desenhe novamente o traço.');
+    if(region.type==='textErase'){
+      const width=Math.max(1,right-left),height=Math.max(1,bottom-top),padding=Math.max(48,Math.min(220,Math.max(width,height)*.4)),side=Math.max(1,Math.min(canvas.width,canvas.height,Math.ceil(Math.max(width,height)+padding*2))),centerX=(left+right)/2,centerY=(top+bottom)/2;
+      const x=Math.max(0,Math.min(canvas.width-side,Math.round(centerX-side/2))),y=Math.max(0,Math.min(canvas.height-side,Math.round(centerY-side/2)));
+      return{x,y,width:side,height:side,left,top,right,bottom};
+    }
+    const width=Math.max(1,right-left),height=Math.max(1,bottom-top),marginX=Math.max(22,Math.min(120,Math.max(width*.12,height*.9))),marginY=Math.max(22,Math.min(120,Math.max(height*.9,width*.12)));
+    const x=Math.max(0,Math.floor(left-marginX)),y=Math.max(0,Math.floor(top-marginY)),endX=Math.min(canvas.width,Math.ceil(right+marginX)),endY=Math.min(canvas.height,Math.ceil(bottom+marginY));
+    return{x,y,width:Math.max(1,endX-x),height:Math.max(1,endY-y),left,top,right,bottom};
+  }
+  function drawRegionMask(ctx,region,geometry){
+    const sx=512/geometry.width,sy=512/geometry.height;ctx.save();ctx.scale(sx,sy);ctx.fillStyle='#fff';ctx.strokeStyle='#fff';
+    if(region.type==='brush'||region.type==='inpaintBrush'){
+      const points=(region.points||[]).filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));ctx.translate(-geometry.x,-geometry.y);traceBrush(ctx,points,Math.max(1,Number(region.size)||1));ctx.stroke();
+      if(points.length===1){ctx.beginPath();ctx.arc(points[0].x,points[0].y,Math.max(1,Number(region.size)||1)/2,0,Math.PI*2);ctx.fill()}
+    }else ctx.fillRect(region.x-geometry.x,region.y-geometry.y,region.w,region.h);
+    ctx.restore();
+  }
+  function estimateFlatTextBackground(pixels,size,region,geometry){
+    const sx=size/geometry.width,sy=size/geometry.height,left=Math.max(0,Math.floor((region.x-geometry.x)*sx)),top=Math.max(0,Math.floor((region.y-geometry.y)*sy)),right=Math.min(size,Math.ceil((region.x+region.w-geometry.x)*sx)),bottom=Math.min(size,Math.ceil((region.y+region.h-geometry.y)*sy));
+    if(right<=left||bottom<=top)return null;
+    const band=Math.max(4,Math.min(14,Math.round((bottom-top)*.4))),samples=[[],[],[]];
+    for(let y=Math.max(0,top-band);y<Math.min(size,bottom+band);y++)for(let x=Math.max(0,left-band);x<Math.min(size,right+band);x++){
+      if(x>=left&&x<right&&y>=top&&y<bottom)continue;
+      const p=(y*size+x)*4;if(pixels[p+3]<200)continue;samples[0].push(pixels[p]);samples[1].push(pixels[p+1]);samples[2].push(pixels[p+2]);
+    }
+    if(samples[0].length<24)return null;
+    const median=channel=>{const sorted=[...channel].sort((a,b)=>a-b);return sorted[Math.floor(sorted.length/2)]},base=samples.map(median),inliers=[];
+    for(let i=0;i<samples[0].length;i++)if(Math.max(Math.abs(samples[0][i]-base[0]),Math.abs(samples[1][i]-base[1]),Math.abs(samples[2][i]-base[2]))<=30)inliers.push(i);
+    if(inliers.length/samples[0].length<.78)return null;
+    return base.map((_,channel)=>Math.round(inliers.reduce((sum,i)=>sum+samples[channel][i],0)/inliers.length));
+  }
+  async function createInpaintPatch(ctx,region){
+    const geometry=regionGeometry(ctx.canvas,region),size=512,input=document.createElement('canvas'),mask=document.createElement('canvas');input.width=input.height=mask.width=mask.height=size;
+    const inputCtx=input.getContext('2d',{willReadFrequently:true}),maskCtx=mask.getContext('2d',{willReadFrequently:true});
+    inputCtx.drawImage(ctx.canvas,geometry.x,geometry.y,geometry.width,geometry.height,0,0,size,size);drawRegionMask(maskCtx,region,geometry);
+    const pixels=inputCtx.getImageData(0,0,size,size).data,maskPixels=maskCtx.getImageData(0,0,size,size).data,count=size*size;
+    const flatBackground=region.type==='textErase'?estimateFlatTextBackground(pixels,size,region,geometry):null,generated=document.createElement('canvas');generated.width=generated.height=size;const generatedCtx=generated.getContext('2d');
+    if(flatBackground){generatedCtx.fillStyle=`rgb(${flatBackground[0]},${flatBackground[1]},${flatBackground[2]})`;generatedCtx.fillRect(0,0,size,size)}
+    else{
+      const imageData=new Float32Array(count*3),maskData=new Float32Array(count);
+      for(let i=0;i<count;i++){const p=i*4;imageData[i]=pixels[p+2]/255;imageData[count+i]=pixels[p+1]/255;imageData[count*2+i]=pixels[p]/255;maskData[i]=maskPixels[p+3]>0?1:0}
+      const ort=await loadOrtRuntime(),imageTensor=new ort.Tensor('float32',imageData,[1,3,size,size]),maskTensor=new ort.Tensor('float32',maskData,[1,1,size,size]);
+      const output=await runInpaintModel(imageTensor,maskTensor,pixels,maskPixels),tensor=output[Object.keys(output)[0]],values=tensor.data;
+      const transform=inpaintOutputTransform(values,pixels,maskPixels,count);
+      const {scale,bias}=transform,result=inputCtx.createImageData(size,size);
+      for(let i=0;i<count;i++){const p=i*4;result.data[p]=Math.max(0,Math.min(255,Math.round(values[count*2+i]*scale+bias)));result.data[p+1]=Math.max(0,Math.min(255,Math.round(values[count+i]*scale+bias)));result.data[p+2]=Math.max(0,Math.min(255,Math.round(values[i]*scale+bias)));result.data[p+3]=255}
+      generatedCtx.putImageData(result,0,0);
+    }
+    const patch=document.createElement('canvas');patch.width=geometry.width;patch.height=geometry.height;const patchCtx=patch.getContext('2d');patchCtx.drawImage(generated,0,0,size,size,0,0,geometry.width,geometry.height);
+    const localMask=document.createElement('canvas');localMask.width=geometry.width;localMask.height=geometry.height;localMask.getContext('2d').drawImage(mask,0,0,size,size,0,0,geometry.width,geometry.height);
+    patchCtx.globalCompositeOperation='destination-in';patchCtx.drawImage(localMask,0,0);
+    if(region.type==='textErase'){
+      const tight=document.createElement('canvas');tight.width=Math.max(1,Math.round(region.w));tight.height=Math.max(1,Math.round(region.h));
+      tight.getContext('2d').drawImage(patch,Math.round(region.x-geometry.x),Math.round(region.y-geometry.y),tight.width,tight.height,0,0,tight.width,tight.height);tight.inpaintX=region.x;tight.inpaintY=region.y;return tight;
+    }
+    patch.inpaintX=geometry.x;patch.inpaintY=geometry.y;return patch;
+  }
+  async function applyInpaintRegion(ctx,region,index,total){
+    let patch=region.inpaintPatch;
+    if(!patch){state.inpaintStatus=`Limpando área ${index} de ${total}…`;els.retouchStatus.textContent=state.inpaintStatus;patch=await createInpaintPatch(ctx,region)}
+    if(!patch.width||!patch.height){region.inpaintPatch=null;throw new Error('A área reconstruída ficou vazia. Pinte novamente sobre a imagem.')}
+    region.inpaintPatch=patch;ctx.drawImage(patch,patch.inpaintX,patch.inpaintY);
+  }
+  function traceBrush(ctx,points,size){
+    ctx.beginPath();if(!points.length)return;
+    ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);
+    ctx.lineWidth=size;ctx.lineCap='round';ctx.lineJoin='round';
+    if(points.length===1){ctx.moveTo(points[0].x+0.01,points[0].y);ctx.lineTo(points[0].x+0.01,points[0].y)}
+  }
+  async function renderEditedSource(source){
+    const original=await loadImage(source.url),width=Math.floor(original.naturalWidth||source.width),height=Math.floor(original.naturalHeight||source.height);
+    if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1)throw new Error('A imagem original ainda não terminou de carregar. Aguarde e tente novamente.');
+    source.width=width;source.height=height;const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+    const ctx=canvas.getContext('2d');ctx.drawImage(original,0,0);
+    for(const op of source.edits||[]){
+      await yieldToBrowser();
+      if(op.type==='fillText'){
+        ctx.save();for(const rect of op.rects||[]){ctx.fillStyle=`rgb(${rect.color[0]}, ${rect.color[1]}, ${rect.color[2]})`;ctx.fillRect(rect.x,rect.y,rect.w,rect.h)}ctx.restore();continue;
+      }
+      if(op.type==='erase'){for(let i=0;i<op.rects.length;i++)await applyInpaintRegion(ctx,op.rects[i],i+1,op.rects.length);continue}
+      if(op.type==='inpaintBrush'){await applyInpaintRegion(ctx,op,1,1);continue}
+      if(op.type==='paint'){ctx.save();ctx.strokeStyle=op.color;traceBrush(ctx,op.points,op.size);ctx.stroke();ctx.restore();continue}
+      if(op.type==='restore'){
+        if(!op.points?.length)continue;
+        const radius=op.size/2+1,left=Math.max(0,Math.floor(Math.min(...op.points.map(p=>p.x))-radius)),top=Math.max(0,Math.floor(Math.min(...op.points.map(p=>p.y))-radius));
+        const right=Math.min(source.width,Math.ceil(Math.max(...op.points.map(p=>p.x))+radius)),bottom=Math.min(source.height,Math.ceil(Math.max(...op.points.map(p=>p.y))+radius)),width=right-left,height=bottom-top;
+        if(width<1||height<1)continue;
+        const patch=document.createElement('canvas');patch.width=width;patch.height=height;
+        const patchCtx=patch.getContext('2d');patchCtx.drawImage(original,left,top,width,height,0,0,width,height);
+        patchCtx.globalCompositeOperation='destination-in';patchCtx.save();patchCtx.translate(-left,-top);patchCtx.fillStyle='#fff';patchCtx.strokeStyle='#fff';traceBrush(patchCtx,op.points,op.size);patchCtx.stroke();
+        if(op.points.length===1){patchCtx.beginPath();patchCtx.arc(op.points[0].x,op.points[0].y,op.size/2,0,Math.PI*2);patchCtx.fill()}
+        patchCtx.restore();ctx.drawImage(patch,left,top);
+      }
+    }
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Não foi possível criar a imagem retocada.')),'image/png'));
+    const nextUrl=URL.createObjectURL(blob);if(source.editUrl){imageCache.delete(source.editUrl);URL.revokeObjectURL(source.editUrl)}source.editUrl=nextUrl;
+  }
+  async function commitEdits(changes,detections=[]){
+    if(!changes.length)return;
+    if(!current()||state.busy)return;
+    state.busy=true;updateCounts();
+    const before=new Map();for(const {source} of changes){if(!before.has(source))before.set(source,source.edits.length)}
+    const history={before,detections};
+    try{
+      changes.forEach(({source,op})=>source.edits.push(op));
+      detections.forEach(box=>{box.removed=true;box.selected=false});
+      for(const source of before.keys()){await renderEditedSource(source);await yieldToBrowser()}
+      state.inpaintStatus='';
+      state.history.push(history);
+      renderCurrent();renderOverlay();renderTextList();notify('Retoque aplicado. Você pode desfazer a última alteração.');
+    }catch(error){
+      console.error(error);state.inpaintStatus='';for(const [source,length] of before)source.edits.length=length;detections.forEach(box=>box.removed=false);
+      for(const source of before.keys()){try{await renderEditedSource(source)}catch{}}
+      renderCurrent();renderTextList();const operation=changes.every(change=>change.op.type==='fillText')?'a limpeza rápida sem IA':changes.some(change=>change.op.type==='inpaintBrush'||change.op.type==='erase')?'a Borracha IA':'o retoque';notify(`Não foi possível aplicar ${operation}: ${error?.message||'erro desconhecido'}`);
+    }finally{state.busy=false;updateCounts()}
+  }
+  function sourcePoint(page,point){
+    if(!page.isRoll)return{source:page,x:point.x,y:point.y};
+    const segment=page.segments.find((s,i)=>point.y>=s.y&&(point.y<s.y+s.height||i===page.segments.length-1));
+    if(!segment)return null;
+    return{source:segment.page,x:point.x*segment.page.width/page.width,y:Math.max(0,Math.min(segment.page.height,(point.y-segment.y)*segment.page.height/segment.height))};
+  }
+  function brushChanges(page,points,tool){
+    const grouped=new Map();
+    for(const point of points){const mapped=sourcePoint(page,point);if(!mapped)continue;let group=grouped.get(mapped.source);if(!group){group={source:mapped.source,points:[]};grouped.set(mapped.source,group)}group.points.push({x:mapped.x,y:mapped.y})}
+    return Array.from(grouped.values()).map(({source,points:sourcePoints})=>({source,op:{type:tool==='restore'?'restore':tool==='aiErase'?'inpaintBrush':'paint',points:sourcePoints,size:state.brushSize*source.width/page.width,color:state.brushColor}}));
+  }
+  async function sampleBrushColor(page,point){
+    const mapped=sourcePoint(page,point);if(!mapped)return;
+    try{
+      const img=await loadImage(pageUrl(mapped.source)),canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true}),sx=Math.max(0,Math.min(mapped.source.width-1,Math.round(mapped.x))),sy=Math.max(0,Math.min(mapped.source.height-1,Math.round(mapped.y)));ctx.drawImage(img,sx,sy,1,1,0,0,1,1);
+      const [r,g,b]=ctx.getImageData(0,0,1,1).data;state.brushColor=`rgb(${r}, ${g}, ${b})`;state.retouchTool='color';renderTextList();updateCanvasHint();renderOverlay();notify('Cor capturada do balão. Agora pinte sobre as letras.');
+    }catch(error){console.error(error);notify('Não foi possível capturar essa cor.')}
+  }
+  async function eraseSelectedText(){
+    if(state.busy)return;
+    const selected=allSources().flatMap(source=>(source.textBoxes||[]).filter(box=>box.selected&&!box.removed));if(!selected.length)return;
+    const grouped=new Map();
+    selected.forEach(box=>{const source=box.sourcePage;if(!grouped.has(source))grouped.set(source,[]);const padX=Math.max(3,Math.min(10,Math.round(box.h*.16))),padY=Math.max(4,Math.min(12,Math.round(box.h*.24))),x=Math.max(0,Math.floor(box.x-padX)),y=Math.max(0,Math.floor(box.y-padY)),right=Math.min(source.width,Math.ceil(box.x+box.w+padX)),bottom=Math.min(source.height,Math.ceil(box.y+box.h+padY));grouped.get(source).push({type:'textErase',x,y,w:right-x,h:bottom-y})});
+    const changes=Array.from(grouped,([source,rects])=>({source,op:{type:'erase',rects}}));
+    await commitEdits(changes,selected);
+  }
+  async function undoRetouch(){
+    if(state.busy)return;const action=state.history.pop();if(!action)return;
+    const backups=new Map(Array.from(action.before.keys(),source=>[source,source.edits.slice()])),detectionBackups=action.detections.map(box=>({box,removed:box.removed,selected:box.selected}));state.busy=true;updateCounts();
+    try{
+      for(const [source,length] of action.before)source.edits.length=length;
+      action.detections.forEach(box=>{box.removed=false;box.selected=true});
+      for(const source of action.before.keys()){await renderEditedSource(source);await yieldToBrowser()}
+      renderCurrent();renderOverlay();renderTextList();notify('Último retoque desfeito.');
+    }catch(error){console.error(error);for(const [source,edits] of backups)source.edits=edits;detectionBackups.forEach(item=>{item.box.removed=item.removed;item.box.selected=item.selected});for(const source of backups.keys()){try{await renderEditedSource(source)}catch{}}state.history.push(action);renderCurrent();notify('Não foi possível desfazer o retoque.')}
+    finally{state.busy=false;updateCounts()}
+  }
+  function selectedImageFormat(){
+    const mime=els.exportFormat?.value==='image/png'?'image/png':'image/jpeg';
+    return mime==='image/jpeg'?{mime,extension:'jpg',label:'JPEG',quality:.98}:{mime,extension:'png',label:'PNG'};
+  }
+  function originalImageFormat(source){
+    const originalFile=source.cropSnapshot?.file||source.file,originalName=source.cropSnapshot?.name||originalFile?.name||source.name,extension=String(originalName||'').match(/\.([^.]+)$/)?.[1]||'';
+    const normalized=extension.toLowerCase();
+    if(normalized==='png'||(!extension&&originalFile?.type==='image/png'))return{mime:'image/png',extension:extension||'png',label:'PNG'};
+    if(normalized==='jpg'||normalized==='jpeg'||(!extension&&originalFile?.type==='image/jpeg'))return{mime:'image/jpeg',extension:extension||'jpg',label:normalized==='jpeg'?'JPEG':'JPG',quality:.98};
+    return selectedImageFormat();
+  }
+  function encodeExportCanvas(canvas,format,errorMessage){
+    return new Promise((resolve,reject)=>canvas.toBlob(blob=>{
+      if(!blob)return reject(new Error(errorMessage));
+      if(blob.type!==format.mime)return reject(new Error(`O navegador não conseguiu criar ${format.label}.`));
+      resolve(blob);
+    },format.mime,format.quality));
+  }
+  async function exportRetouchedPages(){
+    if(state.busy)return;const sources=allSources().filter(hasImageChanges);if(!sources.length){notify('Não há melhorias para baixar.');return}
+    state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();const entries=[],outputFormats=new Set();
+    try{
+      for(let i=0;i<sources.length;i++){
+        const source=sources[i],format=originalImageFormat(source),img=await loadImage(pageUrl(source)),width=Math.floor(img.naturalWidth||source.width),height=Math.floor(img.naturalHeight||source.height);
+        if(width<1||height<1)throw new Error(`A imagem ${source.name} não tem dimensões válidas.`);
+        source.width=width;source.height=height;
+        const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');
+        if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height)}ctx.drawImage(img,0,0,width,height);
+        const blob=await encodeExportCanvas(canvas,format,'Não foi possível criar a imagem.');
+        entries.push({name:retouchedPageEntryName(sources,i,format),data:new Uint8Array(await blob.arrayBuffer())});outputFormats.add(format.label);els.progressBar.style.width=`${Math.round((i+1)/sources.length*100)}%`;
+      }
+      const url=URL.createObjectURL(zipStore(entries)),a=document.createElement('a');a.href=url;a.download=zipDownloadName('retouchedZipName','paginas-corrigidas');document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify(`${sources.length} páginas com melhorias exportadas em ${Array.from(outputFormats).join(' e ')} dentro de ${a.download}.`);
+    }catch(error){console.error(error);notify('Não foi possível exportar as páginas corrigidas. Tente menos imagens por vez.')}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},900)}
+  }
+
+  function renderPanels(){
+    const page=current(),boxes=page?page.boxes:[];
+    els.panelCounter.textContent=`${boxes.length} ${boxes.length===1?'painel':'painéis'}`;
+    els.undoBtn.disabled=!boxes.length||state.busy;els.deleteSelected.disabled=!state.selectedId||state.busy;els.copyLayout.disabled=!boxes.length||state.pages.length<2||state.busy;
+    if(!boxes.length){els.panelList.innerHTML='<div class="no-panels">Ainda não há marcações.<br>Arraste na página para criar a primeira.</div>';return}
+    els.panelList.innerHTML='';
+    boxes.forEach((box,index)=>{
+      const item=document.createElement('div');item.className='panel-item'+(box.id===state.selectedId?' active':'');
+      item.innerHTML=`<div class="panel-number">${index+1}</div><div class="panel-info"><strong>Painel ${String(index+1).padStart(2,'0')}</strong><span>${Math.round(box.w)} × ${Math.round(box.h)} px</span></div><button class="mini-action" title="Remover painel" aria-label="Remover painel">×</button>`;
+      item.addEventListener('click',e=>{if(e.target.closest('button'))return;state.selectedId=box.id;renderPanels();renderOverlay()});
+      item.querySelector('button').addEventListener('click',()=>removeBox(box.id));els.panelList.appendChild(item);
+    });
+  }
+  function updateCounts(){
+    const count=totalPanels(),has=count>0;
+    els.exportCount.textContent=count;els.exportBtn.disabled=!has||state.busy;els.exportTop.disabled=!has||state.busy;
+    const hasSnapshot=!!state.rollSourcePages||!!state.splitSourcePages;
+    els.rollBtn.hidden=hasSnapshot||state.pages.length<2;els.rollBtn.disabled=state.rolling||state.splitting||state.busy;
+    const markedCount=Array.from(state.splitMarks.values()).reduce((sum,marks)=>sum+marks.length,0),currentMarks=state.splitMarks.get(state.currentId)||[];
+    els.markSplitBtn.disabled=state.rolling||state.splitting||state.busy||state.ocrRunning||hasSnapshot||!current()||current()?.isRoll;
+    els.markSplitBtn.classList.toggle('primary',state.mode==='splitmark');els.markSplitBtn.textContent=state.mode==='splitmark'?'✓ Concluir':'＋ Marcar cortes';
+    els.splitPagesBtn.disabled=state.rolling||state.splitting||state.busy||state.ocrRunning||hasSnapshot||markedCount===0;
+    els.undoSplitMarkBtn.disabled=state.busy||state.splitting||!currentMarks.length;
+    els.clearSplitMarksBtn.disabled=state.busy||state.splitting||markedCount===0;
+    const hasSplitParts=!!state.splitSourcePages&&state.pages.some(page=>page.isSplitPart);
+    els.downloadSplitBtn.hidden=!hasSplitParts;els.downloadSplitBtn.disabled=state.busy||state.splitting;
+    els.saveSplitFolderBtn.hidden=!hasSplitParts;els.saveSplitFolderBtn.disabled=state.busy||state.splitting;els.saveSplitFolderBtn.textContent=typeof window.showDirectoryPicker==='function'?'⇩ Salvar partes em uma pasta…':'⇩ Baixar partes (ZIP)';
+    $('splitSaveNote').hidden=!hasSplitParts;$('splitSaveNote').textContent=typeof window.showDirectoryPicker==='function'?'A última pasta escolhida será sugerida na próxima vez.':'Seu navegador não permite salvar direto em pasta. Use o botão de ZIP.';
+    els.restorePagesBtn.hidden=!hasSnapshot;
+    els.downloadRollTop.hidden=!current()?.isRoll;els.downloadRollTop.disabled=state.busy||state.rolling;
+    const hasEdits=allSources().some(hasImageChanges),downloadAll=$('downloadAllEditsTop');downloadAll.hidden=!hasEdits;downloadAll.disabled=state.busy;
+    updateCropControls();renderPanels();renderTextList();updateCanvasHint();
+  }
+  function releasePageResources(page){
+    const urls=new Set([page.url,page.editUrl,page.cropSnapshot?.url,page.cropSnapshot?.editUrl].filter(Boolean));
+    for(const url of urls){imageCache.delete(url);URL.revokeObjectURL(url)}
+  }
+  function releaseSplitPages(pages){
+    for(const page of pages)if(page.isSplitPart)releasePageResources(page)
+  }
+  function clipPolygonToY(points,minY,maxY){
+    const clip=(polygon,bound,keepAbove)=>{
+      if(!polygon.length)return[];
+      const output=[];
+      for(let i=0;i<polygon.length;i++){
+        const current=polygon[i],previous=polygon[(i+polygon.length-1)%polygon.length];
+        const currentInside=keepAbove?current.y>=bound:current.y<=bound,previousInside=keepAbove?previous.y>=bound:previous.y<=bound;
+        if(currentInside!==previousInside){
+          const ratio=(bound-previous.y)/(current.y-previous.y);
+          output.push({x:previous.x+(current.x-previous.x)*ratio,y:bound});
+        }
+        if(currentInside)output.push(current);
+      }
+      return output;
+    };
+    return clip(clip(points,minY,true),maxY,false);
+  }
+
+  function toggleSplitMarking(){
+    const page=current();if(!page||page.isRoll){notify('Selecione uma página original antes de marcar as divisões.');return}
+    setActiveTab('cuts');
+    if(state.mode==='splitmark'){setMode('rect');notify('Marcação concluída. Use “Dividir marcadas” para aplicar os cortes.');return}
+    setMode('splitmark');notify('Clique na imagem em cada altura onde quer separar.');
+  }
+  function addSplitMark(page,y){
+    const height=Math.max(1,page.height);if(y<8||y>height-8){notify('Marque o corte dentro da página, longe das bordas.');return}
+    const marks=state.splitMarks.get(page.id)||[];if(marks.some(mark=>Math.abs(mark-y)<12)){notify('Já existe um corte muito perto desse ponto.');return}
+    marks.push(Math.round(y));state.splitMarks.set(page.id,marks);renderOverlay();updateCanvasHint();updateCounts();notify(`Corte marcado em ${Math.round(y)} px. Você pode adicionar outros pontos.`);
+  }
+  function undoSplitMark(){
+    const page=current(),marks=page?state.splitMarks.get(page.id):null;if(!marks?.length)return;
+    marks.pop();if(!marks.length)state.splitMarks.delete(page.id);renderOverlay();updateCanvasHint();updateCounts();
+  }
+  function clearSplitMarks(){state.splitMarks.clear();renderOverlay();updateCanvasHint();updateCounts();notify('Todas as marcações de divisão foram removidas.')}
+  async function splitMarkedPages(){
+    if(state.rolling||state.splitting||state.busy||state.ocrRunning||state.rollSourcePages||state.splitSourcePages)return;
+    const sources=state.pages.slice(),markedPages=sources.filter(page=>!page.isRoll&&(state.splitMarks.get(page.id)||[]).length);
+    if(!markedPages.length){notify('Marque ao menos um ponto de divisão em uma página.');return}
+    state.splitting=true;updateCounts();notify('Aplicando os cortes marcados…');
+    const created=[];let success=false;
+    try{
+      const replacements=[];
+      for(const page of sources){
+        const rawMarks=state.splitMarks.get(page.id)||[];
+        if(page.isRoll||!rawMarks.length){replacements.push(page);continue}
+        await ensureDimensions(page);
+        const img=await loadImage(pageUrl(page)),height=img.naturalHeight,width=img.naturalWidth,scaleY=height/Math.max(1,page.height);
+        const cuts=rawMarks.map(y=>Math.round(y*scaleY)).filter(y=>y>8&&y<height-8).sort((a,b)=>a-b);
+        const bounds=[0,...cuts,height];
+        if(bounds.length<3){replacements.push(page);continue}
+        for(let i=0;i<bounds.length-1;i++){
+          const top=bounds[i],bottom=bounds[i+1],partHeight=bottom-top;if(partHeight<8)continue;
+          const canvas=document.createElement('canvas');canvas.width=width;canvas.height=partHeight;
+          const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas indisponível.');
+          ctx.drawImage(img,0,top,width,partHeight,0,0,width,partHeight);
+          const blob=await new Promise((resolve,reject)=>canvas.toBlob(result=>result?resolve(result):reject(new Error('Não foi possível criar uma parte da imagem.')),'image/png'));
+          const file=new File([blob],fileBase(page.name)+'_parte_'+String(i+1).padStart(2,'0')+'.png',{type:'image/png',lastModified:Date.now()});
+          const part={id:crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random(),file,url:URL.createObjectURL(file),editUrl:null,name:file.name,boxes:page.boxes.flatMap(box=>{
+            const nextId=crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();
+            if(box.points?.length>=3){
+              const scaled=box.points.map(point=>({x:point.x*width/Math.max(1,page.width),y:point.y*height/Math.max(1,page.height)})),clipped=clipPolygonToY(scaled,top,bottom);
+              if(clipped.length<3)return[];
+              const xs=clipped.map(point=>point.x),ys=clipped.map(point=>point.y),left=Math.min(...xs),right=Math.max(...xs),boxTop=Math.min(...ys),boxBottom=Math.max(...ys);
+              return right-left>=1&&boxBottom-boxTop>=1?[{...box,id:nextId,x:left,w:right-left,y:boxTop-top,h:boxBottom-boxTop,points:clipped.map(point=>({x:point.x,y:point.y-top}))}]:[];
+            }
+            const left=Math.max(0,box.x),right=Math.min(width,box.x+box.w),boxTop=Math.max(top,box.y),boxBottom=Math.min(bottom,box.y+box.h);
+            return right-left>=8&&boxBottom-boxTop>=8?[{...box,id:nextId,x:left,w:right-left,y:boxTop-top,h:boxBottom-boxTop}]:[];
+          }),textBoxes:[],edits:[],width,height:partHeight,isSplitPart:true,splitFromId:page.id};
+          created.push(part);replacements.push(part);
+        }
+      }
+      if(!created.length)throw new Error('Os pontos marcados não produziram partes válidas.');
+      const previousCurrent=state.currentId;state.splitSourcePages=sources;state.pages=replacements;state.splitMarks.clear();
+      state.currentId=replacements.find(page=>page.splitFromId===previousCurrent)?.id||replacements.find(page=>page.id===previousCurrent)?.id||replacements[0]?.id||null;
+      state.selectedId=null;state.zoom=1;success=true;setMode('rect');
+      renderQueue();renderCurrent();updateCounts();els.canvasScroll.scrollTop=0;
+      notify(`${markedPages.length} ${markedPages.length===1?'página dividida':'páginas divididas'} em ${created.length} partes.`);
+    }catch(error){
+      console.error('Não foi possível dividir as páginas.',error);releaseSplitPages(created);notify('Não foi possível aplicar as divisões. As imagens originais e as marcações foram mantidas.');
+    }finally{state.splitting=false;updateCounts()}
+    if(success)queueAutoScan(created);
+  }
+  async function createRoll(){
+    if(state.pages.length<2||state.rollSourcePages||state.splitSourcePages||state.rolling||state.splitting||state.busy)return;
+    state.rolling=true;els.rollBtn.disabled=true;
+    try{
+      const sources=state.pages.slice();await Promise.all(sources.map(ensureDimensions));
+      const width=Math.max(...sources.map(p=>p.width));let y=0;const segments=[],boxes=[];
+      for(const page of sources){
+        const height=Math.max(1,Math.round(page.height*width/page.width)),segment={page,y,height};segments.push(segment);
+        for(const box of page.boxes){const sx=width/page.width,sy=height/page.height;boxes.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,x:box.x*sx,y:segment.y+box.y*sy,w:box.w*sx,h:box.h*sy,points:box.points?.map(point=>({x:point.x*sx,y:segment.y+point.y*sy}))});}
+        y+=height;
+      }
+      const roll={id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name:'Rolo contínuo',isRoll:true,segments,width,height:y,boxes,textBoxes:[],edits:[]};
+      state.rollSourcePages=sources;state.pages=[roll];state.currentId=roll.id;state.selectedId=null;state.zoom=1;
+      renderQueue();renderCurrent();updateCounts();els.canvasScroll.scrollTop=0;notify(`${sources.length} imagens unidas sem margens. Largura ajustada à imagem mais larga.`);
+    }catch(error){console.error(error);notify('Não foi possível montar o rolo. Confira se todas as imagens abrem corretamente.')}
+    finally{state.rolling=false;updateCounts()}
+  }
+  function restoreOriginalPages(){
+    const originals=state.rollSourcePages||state.splitSourcePages;if(!originals)return;
+    releaseSplitPages(state.pages);state.pages=originals;state.rollSourcePages=null;state.splitSourcePages=null;state.currentId=state.pages[0]?.id||null;state.selectedId=null;state.zoom=1;
+    renderQueue();renderCurrent();updateCounts();els.canvasScroll.scrollTop=0;notify('Páginas originais restauradas.');
+  }
+  function removeBox(id){const page=current();if(!page)return;page.boxes=page.boxes.filter(b=>b.id!==id);if(state.selectedId===id)state.selectedId=null;renderOverlay();renderPanels();renderQueue();updateCounts();scheduleAnnotationRecoverySave()}
+  function removePage(id){
+    if(state.rolling||state.splitting||state.busy)return;
+    const index=state.pages.findIndex(p=>p.id===id);if(index<0)return;
+    const [removed]=state.pages.splice(index,1);releasePageResources(removed);
+    state.splitMarks.delete(id);
+    if(state.currentId===id){state.currentId=state.pages[Math.min(index,state.pages.length-1)]?.id||null;state.selectedId=null;state.zoom=1}
+    renderQueue();renderCurrent();updateCounts();
+  }
+  function updateBoxBounds(box){
+    if(!box.points?.length)return;
+    const xs=box.points.map(point=>point.x),ys=box.points.map(point=>point.y);
+    box.x=Math.min(...xs);box.y=Math.min(...ys);box.w=Math.max(...xs)-box.x;box.h=Math.max(...ys)-box.y;
+  }
+  function addQuad(points){
+    const page=current();if(!page||points.length<3||points.length>4)return;
+    const vertices=points.map(point=>({x:Math.max(0,Math.min(page.width,point.x)),y:Math.max(0,Math.min(page.height,point.y))}));
+    let twiceArea=0;
+    for(let i=0;i<vertices.length;i++){const a=vertices[i],b=vertices[(i+1)%vertices.length];twiceArea+=a.x*b.y-b.x*a.y}
+    if(Math.abs(twiceArea)<128||vertices.some((point,index)=>Math.hypot(point.x-vertices[(index+1)%vertices.length].x,point.y-vertices[(index+1)%vertices.length].y)<8)){
+      notify('Os pontos precisam formar um contorno visível.');updateCanvasHint();renderOverlay();return;
+    }
+    const box={id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,x:0,y:0,w:0,h:0,points:vertices,mode:'quad'};
+    updateBoxBounds(box);page.boxes.push(box);state.selectedId=box.id;renderOverlay();renderPanels();renderQueue();updateCounts();updateCanvasHint();scheduleAnnotationRecoverySave();notify('Polígono criado. Arraste os vértices para ajustar.');
+  }
+  function finishQuad(){
+    const draft=state.quadDraft;if(!draft||draft.points.length<3)return;
+    const points=draft.points.slice(0,4);state.quadDraft=null;addQuad(points);
+  }
+
+  function addBox(x,y,w,h){
+    const page=current();if(!page)return;
+    const left=Math.max(0,Math.min(x,x+w)),top=Math.max(0,Math.min(y,y+h));
+    const right=Math.min(page.width,Math.max(x,x+w)),bottom=Math.min(page.height,Math.max(y,y+h));
+    if(right-left<8||bottom-top<8){notify('A marcação ficou pequena demais.');return}
+    const box={id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,x:left,y:top,w:right-left,h:bottom-top,mode:state.mode};
+    page.boxes.push(box);state.selectedId=box.id;renderOverlay();renderPanels();renderQueue();updateCounts();scheduleAnnotationRecoverySave();
+  }
+
+  function pointFromEvent(event){
+    const p=els.overlay.createSVGPoint();p.x=event.clientX;p.y=event.clientY;
+    const local=p.matrixTransform(els.overlay.getScreenCTM().inverse());
+    const page=current();return{x:Math.max(0,Math.min(page.width,local.x)),y:Math.max(0,Math.min(page.height,local.y))};
+  }
+  function captureOverlayPointer(pointerId){try{if(typeof els.overlay.setPointerCapture==='function')els.overlay.setPointerCapture(pointerId)}catch{}}
+  function releaseOverlayPointer(pointerId){try{if(typeof els.overlay.releasePointerCapture==='function')els.overlay.releasePointerCapture(pointerId)}catch{}}
+
+  function quadSeedPoints(start,end,page){
+    const dx=end.x-start.x,top=Math.min(start.y,end.y),bottom=Math.max(start.y,end.y);
+    if(Math.abs(dx)<=Math.max(8,page.width*.015))return[{x:0,y:top},{x:page.width,y:top},{x:page.width,y:bottom},{x:0,y:bottom}];
+    const left=Math.min(start.x,end.x),right=Math.max(start.x,end.x);
+    return[{x:left,y:top},{x:right,y:top},{x:right,y:bottom},{x:left,y:bottom}];
+  }
+  els.overlay.addEventListener('pointerdown',event=>{
+    const page=current();if(!page||!page.width||state.mode==='pan'||event.isPrimary===false||(event.pointerType==='mouse'&&event.button!==0))return;
+    const point=pointFromEvent(event),vertexHandle=event.target.closest('[data-vertex-index]'),handle=event.target.closest('[data-handle]'),mark=event.target.closest('[data-mark-id]');
+    if(state.activeTab==='text'){
+      if(state.retouchTool==='sample'){event.preventDefault();void sampleBrushColor(page,point);return}
+      if(state.retouchTool==='color'||state.retouchTool==='restore'||state.retouchTool==='aiErase'){
+        if(state.retouchTool==='color'&&!state.brushColor){notify('Capture uma cor do balão antes de pintar.');return}
+        state.drag={type:'brush',tool:state.retouchTool,points:[point]};state.brushDraft=[point];captureOverlayPointer(event.pointerId);renderOverlay();event.preventDefault();return;
+      }
+      const textTarget=event.target.closest('[data-text-id]');
+      if(textTarget){const found=allSources().flatMap(source=>(source.textBoxes||[]).map(box=>({source,box}))).find(item=>item.box.id===textTarget.dataset.textId);if(found&&!found.box.removed)found.box.selected=!found.box.selected;renderTextList();renderOverlay();event.preventDefault()}
+      return;
+    }
+    if(state.mode==='splitmark'){
+      if(page.isRoll){notify('Restaure as páginas antes de marcá-las para dividir.');return}
+      addSplitMark(page,point.y);event.preventDefault();return;
+    }
+    if(state.mode==='crop'){
+      if(page.isRoll){notify('Restaure as páginas antes de aplicar um corte simples.');setMode('rect');return}
+      state.cropRect=null;state.selectedId=null;state.drag={type:'draw',start:point};state.draft={x:point.x,y:point.y,w:0,h:0};updateCropControls();renderPanels();renderOverlay();captureOverlayPointer(event.pointerId);event.preventDefault();return;
+    }
+    if(vertexHandle){
+      const box=page.boxes.find(item=>item.id===vertexHandle.dataset.markId);if(!box?.points)return;
+      state.selectedId=box.id;state.drag={type:'vertex',box,vertexIndex:Number(vertexHandle.dataset.vertexIndex)};renderPanels();
+    }else if(handle){
+      const box=page.boxes.find(item=>item.id===handle.dataset.markId);if(!box)return;
+      state.selectedId=box.id;state.drag={type:'resize',box,start:point,original:{x:box.x,y:box.y,w:box.w,h:box.h},handle:handle.dataset.handle};renderPanels();
+    }else if(mark){
+      const box=page.boxes.find(item=>item.id===mark.dataset.markId);if(!box)return;
+      state.selectedId=box.id;state.drag={type:'move',box,start:point,original:{x:box.x,y:box.y,w:box.w,h:box.h},originalPoints:box.points?.map(vertex=>({...vertex}))||null};renderPanels();
+    }else if(state.mode==='quad'){
+      if(!state.quadDraft||state.quadDraft.pageId!==page.id)state.quadDraft={pageId:page.id,points:[]};
+      if(state.quadDraft.points.length===0){
+        state.quadDraft.points=[point];state.drag={type:'quad-seed',start:point,moved:false};
+        captureOverlayPointer(event.pointerId);updateCanvasHint();renderOverlay();event.preventDefault();return;
+      }
+      state.quadDraft.points.push(point);
+      if(state.quadDraft.points.length===4)finishQuad()
+      else{updateCanvasHint();renderOverlay()}
+      event.preventDefault();return;
+    }else{
+      state.selectedId=null;state.drag={type:'draw',start:point};state.draft={x:point.x,y:point.y,w:0,h:0};renderPanels();renderOverlay();
+    }
+    captureOverlayPointer(event.pointerId);event.preventDefault();
+  });
+  els.overlay.addEventListener('pointermove',event=>{
+    if(!state.drag)return;const page=current(),point=pointFromEvent(event),drag=state.drag;
+    if(drag.type==='quad-seed'){
+      if(!drag.moved&&Math.hypot(point.x-drag.start.x,point.y-drag.start.y)>5)drag.moved=true;
+      if(!drag.moved)return;
+      state.quadDraft={pageId:page.id,points:quadSeedPoints(drag.start,point,page)};updateCanvasHint();renderOverlay();return;
+    }
+    if(drag.type==='brush'){
+      const last=drag.points[drag.points.length-1];if(Math.hypot(point.x-last.x,point.y-last.y)>=Math.max(2,state.brushSize/12)){drag.points.push(point);state.brushDraft=drag.points;renderOverlay()}return;
+    }
+    if(drag.type==='draw'){
+      let x=drag.start.x,y=drag.start.y,w=point.x-drag.start.x,h=point.y-drag.start.y;
+      if(state.mode==='band'){x=0;w=page.width}
+      state.draft={x:Math.min(x,x+w),y:Math.min(y,y+h),w:Math.abs(w),h:Math.abs(h)};renderOverlay();return;
+    }
+    if(drag.type==='vertex'){
+      drag.box.points[drag.vertexIndex]={x:point.x,y:point.y};updateBoxBounds(drag.box);renderOverlay();renderPanels();scheduleAnnotationRecoverySave();return;
+    }
+    if(drag.type==='move'){
+      if(drag.originalPoints){
+        const minX=Math.min(...drag.originalPoints.map(vertex=>vertex.x)),maxX=Math.max(...drag.originalPoints.map(vertex=>vertex.x));
+        const minY=Math.min(...drag.originalPoints.map(vertex=>vertex.y)),maxY=Math.max(...drag.originalPoints.map(vertex=>vertex.y));
+        const dx=Math.max(-minX,Math.min(page.width-maxX,point.x-drag.start.x)),dy=Math.max(-minY,Math.min(page.height-maxY,point.y-drag.start.y));
+        drag.box.points=drag.originalPoints.map(vertex=>({x:vertex.x+dx,y:vertex.y+dy}));updateBoxBounds(drag.box);
+      }else{
+        drag.box.x=Math.max(0,Math.min(page.width-drag.original.w,drag.original.x+point.x-drag.start.x));
+        drag.box.y=Math.max(0,Math.min(page.height-drag.original.h,drag.original.y+point.y-drag.start.y));
+      }
+    }else{
+      const o=drag.original,k=drag.handle,farX=k.endsWith('w')?o.x+o.w:o.x,farY=k.startsWith('n')?o.y+o.h:o.y;
+      drag.box.x=Math.min(farX,point.x);drag.box.y=Math.min(farY,point.y);drag.box.w=Math.abs(point.x-farX);drag.box.h=Math.abs(point.y-farY);
+      drag.box.x=Math.max(0,drag.box.x);drag.box.y=Math.max(0,drag.box.y);drag.box.w=Math.min(page.width-drag.box.x,Math.max(8,drag.box.w));drag.box.h=Math.min(page.height-drag.box.y,Math.max(8,drag.box.h));
+    }
+    renderOverlay();scheduleAnnotationRecoverySave();
+  });
+  async function finishPointer(event){
+    if(!state.drag)return;const drag=state.drag;
+    if(drag.type==='brush'){
+      state.drag=null;state.brushDraft=null;renderOverlay();releaseOverlayPointer(event.pointerId)
+      const changes=brushChanges(current(),drag.points,drag.tool);await commitEdits(changes);return;
+    }
+    if(drag.type==='quad-seed'){
+      const page=current(),end=pointFromEvent(event);
+      if(!drag.moved&&Math.hypot(end.x-drag.start.x,end.y-drag.start.y)>5){drag.moved=true;state.quadDraft={pageId:page.id,points:quadSeedPoints(drag.start,end,page)}}
+      state.drag=null;
+      if(drag.moved&&state.quadDraft?.points.length===4){const points=state.quadDraft.points.slice();state.quadDraft=null;addQuad(points)}
+      else if(!drag.moved){state.quadDraft={pageId:page.id,points:[drag.start]};updateCanvasHint();renderOverlay()}
+      else{state.quadDraft=null;updateCanvasHint();renderOverlay()}
+      releaseOverlayPointer(event.pointerId)
+      return;
+    }
+    if(drag.type==='draw'&&state.draft){const d=state.draft;state.draft=null;state.drag=null;if(state.mode==='crop'){state.cropRect=d.w>=8&&d.h>=8?d:null;updateCropControls();renderOverlay();renderPanels();if(!state.cropRect)notify('Selecione uma área maior para recortar.')}else addBox(d.x,d.y,d.w,d.h)}
+    else{state.drag=null;renderOverlay();renderPanels();renderQueue();if(['move','resize','vertex'].includes(drag.type))scheduleAnnotationRecoverySave()}
+    releaseOverlayPointer(event.pointerId)
+  }
+  els.overlay.addEventListener('pointerup',finishPointer);els.overlay.addEventListener('pointercancel',finishPointer);
+
+
+  async function applyCropSelection(){
+    const page=current(),rect=state.cropRect;if(state.busy||state.ocrRunning||!page||!rect)return;
+    if(page.isRoll){notify('Restaure as páginas antes de aplicar um corte simples.');return}
+    state.busy=true;updateCounts();notify('Aplicando corte…');let newUrl=null;
+    try{
+      const img=await loadImage(pageUrl(page)),naturalWidth=img.naturalWidth||page.width,naturalHeight=img.naturalHeight||page.height;
+      const scaleX=naturalWidth/Math.max(1,page.width),scaleY=naturalHeight/Math.max(1,page.height);
+      const left=Math.max(0,Math.floor(rect.x*scaleX)),top=Math.max(0,Math.floor(rect.y*scaleY));
+      const right=Math.min(naturalWidth,Math.ceil((rect.x+rect.w)*scaleX)),bottom=Math.min(naturalHeight,Math.ceil((rect.y+rect.h)*scaleY));
+      const width=right-left,height=bottom-top;if(width<8||height<8)throw new Error('A área selecionada ficou pequena demais.');
+      const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas indisponível.');
+      ctx.drawImage(img,left,top,width,height,0,0,width,height);
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(result=>result?resolve(result):reject(new Error('Não foi possível criar a imagem recortada.')),'image/png'));
+      const originalName=page.cropSnapshot?.name||page.name,file=new File([blob],`${fileBase(originalName)}.png`,{type:'image/png',lastModified:Date.now()});newUrl=URL.createObjectURL(file);
+      if(!page.cropSnapshot)page.cropSnapshot={url:page.url,editUrl:page.editUrl,file:page.file,name:page.name,width:page.width,height:page.height,boxes:page.boxes,textBoxes:page.textBoxes,edits:page.edits,recoveryKey:page.recoveryKey};
+      else{
+        const keep=new Set([page.cropSnapshot.url,page.cropSnapshot.editUrl].filter(Boolean));
+        for(const url of new Set([page.url,page.editUrl].filter(Boolean)))if(!keep.has(url)){imageCache.delete(url);URL.revokeObjectURL(url)}
+      }
+      page.url=newUrl;newUrl=null;page.editUrl=null;page.file=file;page.name=file.name;page.width=width;page.height=height;page.boxes=[];page.textBoxes=[];page.edits=[];page.recoveryKey=null;
+      state.history=[];state.cropRect=null;state.selectedId=null;state.zoom=1;setMode('rect');renderQueue();renderCurrent();updateCounts();notify('Corte aplicado. A imagem entrou no ZIP de melhorias.');
+    }catch(error){console.error(error);notify(`Não foi possível aplicar o corte: ${error?.message||'erro desconhecido'}`)}
+    finally{if(newUrl)URL.revokeObjectURL(newUrl);state.busy=false;updateCounts()}
+  }
+  function restorePageCrop(){
+    const page=current(),snapshot=page?.cropSnapshot;if(state.busy||!page||!snapshot)return;
+    const keep=new Set([snapshot.url,snapshot.editUrl].filter(Boolean));
+    for(const url of new Set([page.url,page.editUrl].filter(Boolean)))if(!keep.has(url)){imageCache.delete(url);URL.revokeObjectURL(url)}
+    page.url=snapshot.url;page.editUrl=snapshot.editUrl;page.file=snapshot.file;page.name=snapshot.name;page.width=snapshot.width;page.height=snapshot.height;page.boxes=snapshot.boxes;page.textBoxes=snapshot.textBoxes;page.edits=snapshot.edits;page.recoveryKey=snapshot.recoveryKey;page.cropSnapshot=null;
+    state.history=[];state.cropRect=null;state.selectedId=null;state.zoom=1;setMode('rect');renderQueue();renderCurrent();updateCounts();notify('Corte desfeito.');
+  }
+  function setMode(mode){
+    if(mode!=='crop'){state.cropRect=null;if(state.drag?.type==='draw'){state.drag=null;state.draft=null}}
+    if(mode!=='quad'&&state.quadDraft){state.quadDraft=null}
+    state.mode=mode;const rect=mode==='rect',band=mode==='band',quad=mode==='quad',pan=mode==='pan';
+    $('drawMode').classList.toggle('active',rect);$('lineMode').classList.toggle('active',band);$('quadMode').classList.toggle('active',quad);
+    $('panMode').classList.toggle('active',pan);$('panMode').setAttribute('aria-pressed',String(pan));els.overlay.classList.toggle('pan-mode',pan);
+    $('rectModeCard').classList.toggle('selected',rect);$('bandModeCard').classList.toggle('selected',band);$('quadModeCard').classList.toggle('selected',quad);
+    updateCropControls();updateCanvasHint();renderOverlay();updateCounts();
+  }
+  function togglePanMode(){if(state.mode==='pan')setMode(state.panReturnMode||'rect');else{state.panReturnMode=state.mode;setMode('pan')}}
+
+  function openCutTool(){setMode('rect');setActiveTab('cuts')}
+  els.cutTabButton.addEventListener('click',()=>setActiveTab('cuts'));els.textTabButton.addEventListener('click',()=>setActiveTab('text'));
+  $('quickTabSwitch').addEventListener('click',()=>state.activeTab==='cuts'?setActiveTab('text'):openCutTool());
+  function handleKeyboardShortcuts(event){
+    if(shortcutCaptureId){
+      if(event.key==='Escape'&&shortcutCaptureId!=='cancel'){event.preventDefault();event.stopImmediatePropagation();endShortcutCapture();return}
+      const combination=shortcutFromEvent(event);if(!combination)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      const conflict=shortcutDefinitions.find(item=>item.id!==shortcutCaptureId&&shortcutValues(shortcuts[item.id]).includes(combination));
+      if(conflict){notify(`Esse atalho já está atribuído a “${conflict.label}”.`);return}
+      shortcuts[shortcutCaptureId]=combination;saveShortcuts();endShortcutCapture();notify('Atalho atualizado.');return;
+    }
+    const dialog=$('shortcutsDialog');if(dialog.open)return;
+    if(event.repeat||event.isComposing)return;
+    const target=event.target;if(target?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(target?.tagName))return;
+    const combination=shortcutFromEvent(event);if(!combination)return;
+    const definition=shortcutDefinitions.find(item=>shortcutValues(shortcuts[item.id]).includes(combination));if(!definition)return;
+    const page=current();
+    switch(definition.id){
+      case 'openCuts':event.preventDefault();openCutTool();break;
+      case 'textTab':event.preventDefault();setActiveTab('text');break;
+      case 'band':event.preventDefault();setActiveTab('cuts');setMode('band');break;
+      case 'polygon':event.preventDefault();setActiveTab('cuts');setMode('quad');break;
+      case 'undo':event.preventDefault();if(state.activeTab==='text')void undoRetouch();else if(page?.boxes.length)removeBox(page.boxes[page.boxes.length-1].id);break;
+      case 'deleteSelected':if(state.activeTab==='cuts'&&state.selectedId){event.preventDefault();removeBox(state.selectedId)}break;
+      case 'finishPolygon':if(state.mode==='quad'&&state.quadDraft?.points.length>=3){event.preventDefault();finishQuad()}break;
+      case 'cancel':if(state.drag||state.quadDraft||state.mode==='splitmark'){event.preventDefault();state.drag=null;state.draft=null;state.brushDraft=null;state.quadDraft=null;if(state.mode==='splitmark')setMode('rect');else{updateCanvasHint();renderOverlay()}}break;
+      case 'previousPage':case 'nextPage':{
+        const index=state.pages.findIndex(item=>item.id===state.currentId),next=index+(definition.id==='nextPage'?1:-1);
+        if(next>=0&&next<state.pages.length){event.preventDefault();state.currentId=state.pages[next].id;state.selectedId=null;renderQueue();renderCurrent();updateCounts()}
+        break;
+      }
+    }
+  }
+  window.addEventListener('keydown',handleKeyboardShortcuts,true);
+  els.detectTextBtn.addEventListener('click',()=>detectText());
+  els.selectAllText.addEventListener('click',()=>{const items=allSources().flatMap(source=>source.textBoxes||[]).filter(box=>!box.removed),next=!items.every(box=>box.selected);items.forEach(box=>box.selected=next);renderTextList();renderOverlay()});
+  els.eraseTextBtn.addEventListener('click',eraseSelectedText);els.undoRetouchBtn.addEventListener('click',undoRetouch);
+  els.downloadRetouchedBtn.addEventListener('click',exportRetouchedPages);$('downloadAllEditsTop').addEventListener('click',exportRetouchedPages);
+  $('cropImageMode').addEventListener('click',()=>{if(state.mode==='crop'){setMode('rect');return}if(current()?.isRoll){notify('Restaure as páginas antes de aplicar um corte simples.');return}setActiveTab('cuts');setMode('crop')});
+  $('applyCropBtn').addEventListener('click',applyCropSelection);$('cancelCropBtn').addEventListener('click',()=>setMode('rect'));$('restoreCropBtn').addEventListener('click',restorePageCrop);
+  els.aiEraseBrushBtn.addEventListener('click',()=>{state.retouchTool='aiErase';updateCanvasHint();renderTextList()});
+  els.retouchSelectBtn.addEventListener('click',()=>{state.retouchTool='select';updateCanvasHint();renderTextList()});
+  els.sampleColorBtn.addEventListener('click',()=>{state.retouchTool='sample';updateCanvasHint();renderTextList()});
+  els.colorBrushBtn.addEventListener('click',()=>{if(!state.brushColor){notify('Use “Capturar cor” e clique em uma área limpa do balão.');return}state.retouchTool='color';updateCanvasHint();renderTextList()});
+  els.restoreBrushBtn.addEventListener('click',()=>{state.retouchTool='restore';updateCanvasHint();renderTextList()});
+  els.brushSize.addEventListener('input',()=>{state.brushSize=Number(els.brushSize.value);renderTextList();renderOverlay()});
+  $('finishQuadBtn').addEventListener('click',finishQuad);
+  $('drawMode').addEventListener('click',()=>setMode('rect'));$('lineMode').addEventListener('click',()=>setMode('band'));$('quadMode').addEventListener('click',()=>setMode('quad'));
+  $('panMode').addEventListener('click',togglePanMode);
+  $('rectModeCard').addEventListener('click',()=>setMode('rect'));$('bandModeCard').addEventListener('click',()=>setMode('band'));$('quadModeCard').addEventListener('click',()=>setMode('quad'));
+  $('zoomIn').addEventListener('click',()=>{state.zoom=Math.min(3,Math.round((state.zoom+.2)*100)/100);setImageSize()});
+  $('zoomOut').addEventListener('click',()=>{state.zoom=Math.max(.4,Math.round((state.zoom-.2)*100)/100);setImageSize()});
+  $('fitZoom').addEventListener('click',()=>{state.zoom=1;setImageSize()});
+  $('undoBtn').addEventListener('click',()=>{const page=current();if(page&&page.boxes.length)removeBox(page.boxes[page.boxes.length-1].id)});
+  els.deleteSelected.addEventListener('click',()=>{if(state.selectedId)removeBox(state.selectedId)});
+  els.copyLayout.addEventListener('click',()=>{
+    const source=current();if(!source||!source.boxes.length)return;
+    const targets=state.pages.filter(p=>p.id!==source.id);
+    if(targets.some(p=>p.boxes.length)&&!confirm('As marcações existentes nas outras páginas serão substituídas. Deseja continuar?'))return;
+    for(const target of targets){
+      const sx=(target.width||source.width)/source.width,sy=(target.height||source.height)/source.height;
+      target.boxes=source.boxes.map(b=>({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,x:b.x*sx,y:b.y*sy,w:b.w*sx,h:b.h*sy,points:b.points?.map(point=>({x:point.x*sx,y:point.y*sy}))}));
+    }
+    renderQueue();updateCounts();scheduleAnnotationRecoverySave();notify(`Marcações copiadas para ${targets.length} ${targets.length===1?'página':'páginas'}.`);
+  });
+
+  function chooseFiles(){els.imageInput.click()}
+  async function collectFolderImages(directory,prefix='',result=[]){
+    for await(const entry of directory.values()){
+      if(entry.kind==='directory')await collectFolderImages(entry,`${prefix}${entry.name}/`,result);
+      else if(entry.kind==='file'&&imageExtensions.test(entry.name)){const file=await entry.getFile();file.quadroRelativePath=`${prefix}${entry.name}`;result.push(file)}
+    }
+    return result;
+  }
+  async function chooseFolder(){
+    if(typeof window.showDirectoryPicker!=='function'){
+      if('webkitdirectory' in els.folderInput){els.folderInput.click();return}
+      notify('Este navegador não escolhe uma pasta inteira. Selecione várias imagens pelo botão “Arquivos”.');els.imageInput.click();return;
+    }
+    try{
+      const directory=await window.showDirectoryPicker({mode:'read'}),files=await collectFolderImages(directory);
+      files.sort((a,b)=>(a.quadroRelativePath||a.name).localeCompare(b.quadroRelativePath||b.name,undefined,{numeric:true,sensitivity:'base'}));
+      if(!files.length){notify('Não encontrei imagens nessa pasta.');return}
+      addFiles(files);
+    }catch(error){
+      if(error?.name==='AbortError')return;
+      console.error('Não foi possível ler a pasta escolhida.',error);notify('Abrindo o seletor alternativo de pastas…');
+      try{els.folderInput.click()}catch{notify('Não foi possível abrir a pasta. Use “Arquivos” para selecionar as imagens.')}
+    }
+  }
+  $('addImagesTop').addEventListener('click',chooseFiles);$('addFiles').addEventListener('click',chooseFiles);$('welcomeAdd').addEventListener('click',chooseFiles);$('addFolder').addEventListener('click',chooseFolder);
+  els.rollBtn.addEventListener('click',createRoll);els.restorePagesBtn.addEventListener('click',restoreOriginalPages);els.markSplitBtn.addEventListener('click',toggleSplitMarking);els.splitPagesBtn.addEventListener('click',splitMarkedPages);els.undoSplitMarkBtn.addEventListener('click',undoSplitMark);els.clearSplitMarksBtn.addEventListener('click',clearSplitMarks);
+  els.imageInput.addEventListener('change',e=>{addFiles(e.target.files);e.target.value=''});els.folderInput.addEventListener('change',e=>{const files=Array.from(e.target.files).sort((a,b)=>(a.webkitRelativePath||a.quadroRelativePath||a.name).localeCompare(b.webkitRelativePath||b.quadroRelativePath||b.name,undefined,{numeric:true,sensitivity:'base'}));addFiles(files);e.target.value=''});
+  els.canvasScroll.addEventListener('dragover',e=>{e.preventDefault();els.canvasScroll.style.outline='2px solid #8ca8ff'});
+  els.canvasScroll.addEventListener('dragleave',e=>{if(!els.canvasScroll.contains(e.relatedTarget))els.canvasScroll.style.outline=''});
+  els.canvasScroll.addEventListener('drop',e=>{e.preventDefault();els.canvasScroll.style.outline='';addFiles(e.dataTransfer.files)});
+
+  const crc32Table=(()=>{const table=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c>>>1)^(-(c&1)&0xedb88320);table[n]=c>>>0}return table})();
+  function crc32(bytes){let crc=0xffffffff;for(const byte of bytes)crc=(crc>>>8)^crc32Table[(crc^byte)&255];return(crc^0xffffffff)>>>0}
+  function dosDateTime(){const d=new Date();return{time:(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),date:((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate()}}
+  function zipStore(entries){
+    if(entries.length>0xffff)throw new Error('O ZIP não pode conter mais de 65.535 arquivos.');
+    const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;const dt=dosDateTime();
+    for(const entry of entries){
+      const name=enc.encode(entry.name),data=entry.data;
+      if(name.length>0xffff)throw new Error('Um nome de arquivo é longo demais para o formato ZIP.');
+      if(data.length>0xffffffff||offset+30+name.length+data.length>0xffffffff)throw new Error('O ZIP ultrapassou o limite de tamanho do formato clássico.');
+      const crc=crc32(data);
+      const local=new Uint8Array(30+name.length),lv=new DataView(local.buffer);
+      lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,0,true);lv.setUint16(10,dt.time,true);lv.setUint16(12,dt.date,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);local.set(name,30);locals.push(local,data);
+      const central=new Uint8Array(46+name.length),cv=new DataView(central.buffer);
+      cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);cv.setUint16(12,dt.time,true);cv.setUint16(14,dt.date,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);central.set(name,46);centrals.push(central);offset+=local.length+data.length;
+    }
+    const centralSize=centrals.reduce((n,b)=>n+b.length,0),end=new Uint8Array(22),ev=new DataView(end.buffer);
+    ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,entries.length,true);ev.setUint16(10,entries.length,true);ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
+    return new Blob([...locals,...centrals,end],{type:'application/zip'});
+  }
+  function trimBlankMargins(canvas){
+    const width=canvas.width,height=canvas.height;if(width<2||height<2)return canvas;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true}),pixels=ctx.getImageData(0,0,width,height).data;
+    const blank=(x,y)=>{const i=(y*width+x)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];return pixels[i+3]<12||(r>=246&&g>=246&&b>=246&&Math.max(r,g,b)-Math.min(r,g,b)<=12)};
+    const blankRow=y=>{for(let x=0;x<width;x++)if(!blank(x,y))return false;return true};
+    const blankColumn=x=>{for(let y=0;y<height;y++)if(!blank(x,y))return false;return true};
+    let top=0,bottom=height,left=0,right=width;
+    while(top<bottom&&blankRow(top))top++;
+    while(bottom>top&&blankRow(bottom-1))bottom--;
+    while(left<right&&blankColumn(left))left++;
+    while(right>left&&blankColumn(right-1))right--;
+    if(top>=bottom||left>=right||(top===0&&left===0&&bottom===height&&right===width))return canvas;
+    const trimmed=document.createElement('canvas');trimmed.width=right-left;trimmed.height=bottom-top;
+    trimmed.getContext('2d').drawImage(canvas,left,top,right-left,bottom-top,0,0,trimmed.width,trimmed.height);return trimmed;
+  }
+  async function cropAsImage(page,box,format){
+    const polygon=box.points?.length>=3?box.points:null;
+    if(page.isRoll){
+      const xs=polygon?polygon.map(point=>point.x):[box.x,box.x+box.w],ys=polygon?polygon.map(point=>point.y):[box.y,box.y+box.h];
+      const left=Math.max(0,Math.min(page.width,Math.floor(Math.min(...xs)))),top=Math.max(0,Math.min(page.height,Math.floor(Math.min(...ys))));
+      const right=Math.min(page.width,Math.ceil(Math.max(...xs))),bottom=Math.min(page.height,Math.ceil(Math.max(...ys)));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,right-left);canvas.height=Math.max(1,bottom-top);
+      const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas indisponível.');
+      if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height)}
+      if(polygon){ctx.beginPath();polygon.forEach((point,index)=>index?ctx.lineTo(point.x-left,point.y-top):ctx.moveTo(point.x-left,point.y-top));ctx.closePath();ctx.clip()}
+      for(const segment of page.segments){
+        const segmentTop=Math.max(top,segment.y),segmentBottom=Math.min(bottom,segment.y+segment.height);if(segmentBottom<=segmentTop)continue;
+        const img=await loadImage(pageUrl(segment.page)),naturalWidth=img.naturalWidth||segment.page.width,naturalHeight=img.naturalHeight||segment.page.height;
+        if(naturalWidth<1||naturalHeight<1)continue;
+        const sx=Math.max(0,Math.min(naturalWidth,left*naturalWidth/page.width)),rightX=Math.max(sx,Math.min(naturalWidth,right*naturalWidth/page.width)),sw=rightX-sx;
+        const sy=Math.max(0,Math.min(naturalHeight,(segmentTop-segment.y)*naturalHeight/segment.height)),bottomY=Math.max(sy,Math.min(naturalHeight,(segmentBottom-segment.y)*naturalHeight/segment.height)),sh=bottomY-sy;
+        if(sw<=0||sh<=0)continue;
+        const destTop=Math.max(0,Math.min(canvas.height,Math.round(segmentTop-top))),destBottom=Math.max(destTop,Math.min(canvas.height,Math.round(segmentBottom-top)));
+        if(destBottom>destTop)ctx.drawImage(img,sx,sy,sw,sh,0,destTop,canvas.width,destBottom-destTop);
+      }
+      const output=!polygon&&els.trimCropMargins.checked?trimBlankMargins(canvas):canvas,blob=await encodeExportCanvas(output,format,'Não foi possível criar a imagem.');
+      return new Uint8Array(await blob.arrayBuffer());
+    }
+    const img=await loadImage(pageUrl(page)),naturalWidth=Math.floor(img.naturalWidth||page.width),naturalHeight=Math.floor(img.naturalHeight||page.height);
+    if(naturalWidth<1||naturalHeight<1)throw new Error(`A imagem ${page.name} não tem dimensões válidas.`);
+    const scaleX=naturalWidth/Math.max(1,page.width||naturalWidth),scaleY=naturalHeight/Math.max(1,page.height||naturalHeight);
+    if(polygon){
+      const mapped=polygon.map(point=>({x:point.x*scaleX,y:point.y*scaleY})),xs=mapped.map(point=>point.x),ys=mapped.map(point=>point.y);
+      const left=Math.max(0,Math.floor(Math.min(...xs))),top=Math.max(0,Math.floor(Math.min(...ys))),right=Math.min(naturalWidth,Math.ceil(Math.max(...xs))),bottom=Math.min(naturalHeight,Math.ceil(Math.max(...ys)));
+      const canvas=document.createElement('canvas');canvas.width=right-left;canvas.height=bottom-top;
+      if(canvas.width<1||canvas.height<1)throw new Error(`O polígono da página ${page.name} ficou fora dos limites da imagem.`);
+      const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas indisponível.');
+      if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height)}
+      ctx.beginPath();mapped.forEach((point,index)=>index?ctx.lineTo(point.x-left,point.y-top):ctx.moveTo(point.x-left,point.y-top));ctx.closePath();ctx.clip();
+      ctx.drawImage(img,-left,-top,naturalWidth,naturalHeight);
+      const output=!polygon&&els.trimCropMargins.checked?trimBlankMargins(canvas):canvas,blob=await encodeExportCanvas(output,format,'Não foi possível criar a imagem.');
+      return new Uint8Array(await blob.arrayBuffer());
+    }
+    const left=Math.max(0,Math.min(naturalWidth,Math.floor(box.x*scaleX))),top=Math.max(0,Math.min(naturalHeight,Math.floor(box.y*scaleY)));
+    const right=Math.max(left,Math.min(naturalWidth,Math.ceil((box.x+box.w)*scaleX))),bottom=Math.max(top,Math.min(naturalHeight,Math.ceil((box.y+box.h)*scaleY)));
+    const cropWidth=right-left,cropHeight=bottom-top;if(cropWidth<1||cropHeight<1)throw new Error(`O recorte da página ${page.name} ficou fora dos limites da imagem.`);
+    const canvas=document.createElement('canvas');canvas.width=cropWidth;canvas.height=cropHeight;const ctx=canvas.getContext('2d');
+    if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height)}
+    ctx.drawImage(img,left,top,cropWidth,cropHeight,0,0,cropWidth,cropHeight);
+    const output=els.trimCropMargins.checked?trimBlankMargins(canvas):canvas,blob=await encodeExportCanvas(output,format,'Não foi possível criar a imagem.');
+    return new Uint8Array(await blob.arrayBuffer());
+  }
+
+  async function downloadRoll(){
+    const page=current();if(!page?.isRoll||state.busy)return;
+    const format=selectedImageFormat();state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();
+    try{
+      const maxSide=32000,maxPixels=24000000,scale=Math.min(1,maxSide/page.width,maxSide/page.height,Math.sqrt(maxPixels/(page.width*page.height)));
+      const width=Math.max(1,Math.floor(page.width*scale)),height=Math.max(1,Math.floor(page.height*scale));
+      const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+      const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);ctx.imageSmoothingQuality='high';
+      for(let i=0;i<page.segments.length;i++){
+        const segment=page.segments[i],img=await loadImage(pageUrl(segment.page)),segmentTop=Math.round(segment.y*scale),bottom=i===page.segments.length-1?height:Math.round((segment.y+segment.height)*scale);
+        ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,0,segmentTop,width,bottom-segmentTop);
+        els.progressBar.style.width=`${Math.round((i+1)/page.segments.length*100)}%`;
+      }
+      const blob=await encodeExportCanvas(canvas,format,'O navegador não conseguiu criar a imagem.');
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`rolo-continuo.${format.extension}`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+      notify(scale<.999?`Rolo baixado em ${format.label}, redimensionado para caber no limite do navegador.`:`Rolo completo baixado em ${format.label}.`);
+    }catch(error){console.error(error);notify('Não foi possível exportar o rolo inteiro. Você ainda pode baixar os painéis marcados em ZIP.')}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
+  }
+  let lastSplitDirectoryHandle=null;
+  function openSplitDirectoryDb(){
+    return new Promise((resolve,reject)=>{
+      if(!window.indexedDB){reject(new Error('Memória de pastas indisponível.'));return}
+      const request=indexedDB.open('quadro-split-export',1);
+      request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('handles'))request.result.createObjectStore('handles')};
+      request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('Não foi possível abrir o armazenamento local.'));
+    });
+  }
+  async function loadLastSplitDirectory(){
+    try{const db=await openSplitDirectoryDb();return await new Promise(resolve=>{const request=db.transaction('handles','readonly').objectStore('handles').get('last');request.onsuccess=()=>{db.close();resolve(request.result||null)};request.onerror=()=>{db.close();resolve(null)}})}catch{return null}
+  }
+  async function rememberSplitDirectory(handle){
+    lastSplitDirectoryHandle=handle;
+    try{const db=await openSplitDirectoryDb();await new Promise((resolve,reject)=>{const tx=db.transaction('handles','readwrite');tx.objectStore('handles').put(handle,'last');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Não foi possível guardar a pasta.'))});db.close()}catch(error){console.warn('Não foi possível lembrar a pasta de exportação.',error)}
+  }
+  void loadLastSplitDirectory().then(handle=>{if(handle)lastSplitDirectoryHandle=handle});
+  async function encodeSplitPage(page,format){
+    if(format.mime==='image/png'&&!page.editUrl&&page.file?.type==='image/png')return page.file;
+    const img=await loadImage(pageUrl(page)),width=Math.floor(img.naturalWidth||page.width),height=Math.floor(img.naturalHeight||page.height);
+    if(width<1||height<1)throw new Error(`A imagem ${page.name} não tem dimensões válidas.`);
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');
+    if(!ctx)throw new Error('Canvas indisponível.');
+    if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height)}
+    ctx.drawImage(img,0,0,width,height);return encodeExportCanvas(canvas,format,'Não foi possível criar uma das partes divididas.');
+  }
+  async function splitNameAvailable(directory,name,used){
+    const dot=name.lastIndexOf('.'),stem=dot>=0?name.slice(0,dot):name,extension=dot>=0?name.slice(dot):'';
+    for(let suffix=1;;suffix++){
+      const candidate=suffix===1?name:`${stem}_${String(suffix).padStart(2,'0')}${extension}`,key=candidate.toLocaleLowerCase();if(used.has(key))continue;
+      try{await directory.getFileHandle(candidate,{create:false})}catch(error){if(error?.name==='NotFoundError'){used.add(key);return candidate}throw error}
+    }
+  }
+  async function saveSplitPagesToFolder(){
+    if(state.busy)return;const pages=state.pages.filter(page=>page.isSplitPart);if(!pages.length)return;
+    if(typeof window.showDirectoryPicker!=='function'){notify('Salvamento em pasta não disponível; preparando o ZIP.');await exportSplitPagesZip();return}
+    let directory;
+    try{const options={id:'quadro-split-page-output',mode:'readwrite'};if(lastSplitDirectoryHandle)options.startIn=lastSplitDirectoryHandle;directory=await window.showDirectoryPicker(options)}
+    catch(error){if(error?.name==='AbortError'){notify('Seleção do destino cancelada.');return}console.error('Não foi possível escolher a pasta de destino.',error);notify('Não foi possível abrir a pasta. Preparando o ZIP.');await exportSplitPagesZip();return}
+    void rememberSplitDirectory(directory);
+    const format=selectedImageFormat(),usedNames=new Set();let done=0,fallbackToZip=false;
+    state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();
+    try{
+      for(let i=0;i<pages.length;i++){
+        const page=pages[i],order=String(i+1).padStart(Math.max(3,String(pages.length).length),'0'),name=await splitNameAvailable(directory,`${order}_${fileBase(page.name)}.${format.extension}`,usedNames),blob=await encodeSplitPage(page,format);
+        const handle=await directory.getFileHandle(name,{create:true}),writer=await handle.createWritable();
+        try{await writer.write(blob);await writer.close()}catch(error){try{await writer.abort()}catch{}throw error}
+        done++;els.progressBar.style.width=`${Math.round(done/pages.length*100)}%`;
+      }
+      notify(`${done} partes salvas em ${format.label}. A pasta foi guardada para a próxima exportação.`);
+    }catch(error){console.error('Não foi possível salvar as partes divididas na pasta escolhida.',error);fallbackToZip=true;notify(`A gravação na pasta falhou após ${done} de ${pages.length} partes. Preparando um ZIP para não perder as páginas.`,6000)}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
+    if(fallbackToZip)await exportSplitPagesZip();
+  }
+  async function exportSplitPagesZip(){
+    if(state.busy)return;
+    const pages=state.pages.filter(page=>page.isSplitPart);if(!pages.length){notify('Não há partes divididas para baixar.');return}
+    const format=selectedImageFormat(),maxArchiveBytes=512*1024*1024,maxArchiveEntries=20000,archives=[],usedNames=new Set();
+    let entries=[],entryBytes=0,exportedCount=0;state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();
+    try{
+      const saveArchive=()=>{if(!entries.length)return;archives.push(zipStore(entries));entries=[];entryBytes=0};
+      for(let i=0;i<pages.length;i++){
+        const page=pages[i];let blob;
+        if(format.mime==='image/png'&&!page.editUrl&&page.file?.type==='image/png')blob=page.file;
+        else{
+          const img=await loadImage(pageUrl(page)),width=Math.floor(img.naturalWidth||page.width),height=Math.floor(img.naturalHeight||page.height);
+          if(width<1||height<1)throw new Error(`A imagem ${page.name} não tem dimensões válidas.`);
+          const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');
+          if(!ctx)throw new Error('Canvas indisponível.');
+          if(format.mime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height)}
+          ctx.drawImage(img,0,0,width,height);
+          blob=await encodeExportCanvas(canvas,format,'Não foi possível criar uma das partes divididas.');
+        }
+        const data=new Uint8Array(await blob.arrayBuffer()),pageBase=fileBase(page.name);
+        const order=String(i+1).padStart(Math.max(3,String(pages.length).length),'0');
+        let candidate=`paginas/${order}_${pageBase}.${format.extension}`,suffix=1;
+        while(usedNames.has(candidate.toLocaleLowerCase()))candidate=`paginas/${pageBase}_${String(suffix++).padStart(3,'0')}.${format.extension}`;
+        usedNames.add(candidate.toLocaleLowerCase());
+        if(entries.length&&(entries.length>=maxArchiveEntries||entryBytes+data.length>maxArchiveBytes))saveArchive();
+        entries.push({name:candidate,data});entryBytes+=data.length;exportedCount++;
+        els.progressBar.style.width=`${Math.round(exportedCount/pages.length*100)}%`;
+      }
+      saveArchive();
+      if(exportedCount!==pages.length||!archives.length)throw new Error(`Foram processadas ${exportedCount} de ${pages.length} partes.`);
+      for(let i=0;i<archives.length;i++){
+        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');
+        a.href=url;a.download=archives.length===1?'paginas-divididas.zip':`paginas-divididas_${String(i+1).padStart(3,'0')}.zip`;
+        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+        if(i<archives.length-1)await new Promise(resolve=>setTimeout(resolve,350));
+      }
+      notify(`${exportedCount} de ${pages.length} partes exportadas em ${format.label}${archives.length===1?'':' em '+archives.length+' arquivos ZIP'}.`);
+    }catch(error){console.error('Não foi possível exportar todas as partes divididas.',error);notify(`A exportação parou antes de concluir todas as partes: ${error?.message||'erro desconhecido'}`)}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
+  }
+
+  async function exportZip(){
+    if(state.busy)return;const entries=[],archives=[],pages=state.pages.filter(p=>p.boxes.length);if(!pages.length)return;
+    const jpgFormat={mime:'image/jpeg',extension:'jpg',label:'JPG',quality:.98},pngFormat={mime:'image/png',extension:'png',label:'PNG'},maxArchiveBytes=512*1024*1024,maxArchiveEntries=20000,outputFormats=new Set();
+    let entryBytes=0,done=0,firstNumber=0;state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();
+    const total=totalPanels();
+    const saveArchive=()=>{if(!entries.length)return;archives.push(zipStore(entries));entries.length=0;entryBytes=0};
+    try{
+      firstNumber=reservePanelNumbers(total);
+      for(let pi=0;pi<pages.length;pi++){
+        const page=pages[pi];
+        for(let bi=0;bi<page.boxes.length;bi++){
+          const number=firstNumber+done,box=page.boxes[bi],sourceName=page.cropSnapshot?.name||page.name,polygon=box.points?.length>=3,boxFormat=polygon?pngFormat:jpgFormat,suffix=box.mode==='band'?'faixa':polygon?'poligono':'painel',stem=$('cropNameMode').value==='rename'?`${safeNameBase($('cropNamePrefix').value,'pagina')}_${String(number).padStart(6,'0')}_${suffix}`:`${String(number).padStart(6,'0')}_${fileBase(sourceName)}_${suffix}`;
+          let data;
+          try{data=await cropAsImage(page,box,boxFormat)}catch(error){throw new Error(`Recorte ${number} da página "${sourceName}" falhou: ${error?.message||'erro ao gerar a imagem.'}`,{cause:error})}
+          if(entries.length&&(entries.length>=maxArchiveEntries||entryBytes+data.length>maxArchiveBytes))saveArchive();
+          entries.push({name:`${stem}.${boxFormat.extension}`,data});entryBytes+=data.length;outputFormats.add(boxFormat.label);done++;
+          els.progressBar.style.width=`${Math.round(done/total*100)}%`;
+        }
+      }
+      saveArchive();
+      if(done!==total||!archives.length)throw new Error(`Apenas ${done} de ${total} recortes foram preparados.`);
+      const zipBase=zipDownloadName('cropZipName','paineis-recortados').replace(/\.zip$/i,''),archiveCount=archives.length;
+      for(let i=0;i<archiveCount;i++){
+        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');a.href=url;a.download=archiveCount===1?`${zipBase}.zip`:`${zipBase}_${String(i+1).padStart(3,'0')}.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+        if(i<archiveCount-1)await new Promise(resolve=>setTimeout(resolve,350));
+      }
+      notify(`${done} recortes exportados em ${Array.from(outputFormats).join(' e ')}${archiveCount===1?'':' em '+archiveCount+' arquivos ZIP'}; numeração ${String(firstNumber).padStart(6,'0')}–${String(firstNumber+done-1).padStart(6,'0')}.`);
+    }catch(error){console.error('Não foi possível exportar os cortes.',error);notify(`Falha na exportação após ${done} de ${total} recortes: ${error?.message||'erro desconhecido'}`,6500)}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
+  }  $('cropNameMode').addEventListener('change',()=>syncRenameField('cropNameMode','cropNamePrefix'));
+  $('exportBtn').addEventListener('click',exportZip);$('exportTop').addEventListener('click',exportZip);els.downloadRollTop.addEventListener('click',downloadRoll);els.saveSplitFolderBtn.addEventListener('click',saveSplitPagesToFolder);els.downloadSplitBtn.addEventListener('click',exportSplitPagesZip);
+  setActiveTab('cuts');updateCounts();
+})();
+</script>
+<script>
+(() => {
+  const notice = document.getElementById('offlineSetup');
+  const message = document.getElementById('offlineSetupText');
+  document.getElementById('closeOfflineSetup').addEventListener('click', () => { notice.hidden = true; });
+  if (!('serviceWorker' in navigator)) {
+    message.textContent = 'Este navegador não oferece cache offline. Abra no Safari atualizado e adicione à Tela de Início.';
+    return;
+  }
+  if (!window.isSecureContext) {
+    message.textContent = 'Para instalar o Quadro offline, abra esta página em um endereço HTTPS.';
+    return;
+  }
+  navigator.serviceWorker.register('./service-worker.js', {scope: './'})
+    .then(() => navigator.serviceWorker.ready)
+    .then(() => { message.textContent = 'Quadro preparado para abrir sem internet. No Safari, toque em Compartilhar → Adicionar à Tela de Início e abra pelo novo ícone.'; })
+    .catch(() => { message.textContent = 'Não foi possível preparar o uso offline. Mantenha a página aberta e tente novamente com internet.'; });
+})();
+</script>
+</body>
+</html>
