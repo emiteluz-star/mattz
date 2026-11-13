@@ -198,7 +198,9 @@
               <label class="subtle" for="cropZipName">Nome do ZIP</label>
               <input id="cropZipName" class="select" type="text" value="paineis-recortados" placeholder="paineis-recortados">
             </div>
+            <button id="saveCutsFolderBtn" class="btn" style="width:100%;margin-top:8px" hidden>⇩ Salvar recortes em uma pasta…</button>
             <button id="exportBtn" class="btn primary export-btn" disabled><span>⇩</span> Baixar ZIP</button>
+            <p id="ipadSaveHelp" class="footnote" hidden>Para definir onde os ZIPs ficam no iPad, abra Ajustes → Apps → Safari → Downloads → Outro e escolha a pasta. O Safari usará esse destino nos próximos downloads.</p>
             <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
             <p class="footnote">Polígonos em PNG; painéis e faixas em JPG • arquivos na raiz do ZIP</p>
           </div>
@@ -312,7 +314,7 @@
     imageInput:$('imageInput'),folderInput:$('folderInput'),fileList:$('fileList'),pageCounter:$('pageCounter'),
     welcome:$('welcome'),imageWrap:$('imageWrap'),pageImage:$('pageImage'),rollImages:$('rollImages'),overlay:$('overlay'),canvasScroll:$('canvasScroll'),canvasHint:$('canvasHint'),
     panelCounter:$('panelCounter'),panelList:$('panelList'),currentFileLabel:$('currentFileLabel'),imageSizeLabel:$('imageSizeLabel'),rightTitle:$('rightTitle'),
-    exportTop:$('exportTop'),exportBtn:$('exportBtn'),rollBtn:$('rollBtn'),restorePagesBtn:$('restorePagesBtn'),splitPagesBtn:$('splitPagesBtn'),markSplitBtn:$('markSplitBtn'),undoSplitMarkBtn:$('undoSplitMarkBtn'),clearSplitMarksBtn:$('clearSplitMarksBtn'),saveSplitFolderBtn:$('saveSplitFolderBtn'),downloadSplitBtn:$('downloadSplitBtn'),downloadRollTop:$('downloadRollTop'),exportCount:$('exportCount'),exportFormat:$('exportFormat'),trimCropMargins:$('trimCropMargins'),undoBtn:$('undoBtn'),deleteSelected:$('deleteSelected'),copyLayout:$('copyLayout'),
+    exportTop:$('exportTop'),exportBtn:$('exportBtn'),saveCutsFolderBtn:$('saveCutsFolderBtn'),rollBtn:$('rollBtn'),restorePagesBtn:$('restorePagesBtn'),splitPagesBtn:$('splitPagesBtn'),markSplitBtn:$('markSplitBtn'),undoSplitMarkBtn:$('undoSplitMarkBtn'),clearSplitMarksBtn:$('clearSplitMarksBtn'),saveSplitFolderBtn:$('saveSplitFolderBtn'),downloadSplitBtn:$('downloadSplitBtn'),downloadRollTop:$('downloadRollTop'),exportCount:$('exportCount'),exportFormat:$('exportFormat'),trimCropMargins:$('trimCropMargins'),undoBtn:$('undoBtn'),deleteSelected:$('deleteSelected'),copyLayout:$('copyLayout'),
     zoomReadout:$('zoomReadout'),progress:$('progress'),progressBar:$('progressBar'),toast:$('toast'),markingTools:$('markingTools'),
     cutsPanel:$('cutsPanel'),textPanel:$('textPanel'),cutTabButton:$('cutTabButton'),textTabButton:$('textTabButton'),textCount:$('textCount'),
     ocrLanguage:$('ocrLanguage'),ocrEngine:$('ocrEngine'),scanAllPages:$('scanAllPages'),detectTextBtn:$('detectTextBtn'),ocrStatus:$('ocrStatus'),ocrProgress:$('ocrProgress'),ocrProgressBar:$('ocrProgressBar'),textList:$('textList'),
@@ -1235,6 +1237,7 @@
   function updateCounts(){
     const count=totalPanels(),has=count>0;
     els.exportCount.textContent=count;els.exportBtn.disabled=!has||state.busy;els.exportTop.disabled=!has||state.busy;
+    els.saveCutsFolderBtn.hidden=typeof window.showDirectoryPicker!=='function';els.saveCutsFolderBtn.disabled=!has||state.busy;
     const hasSnapshot=!!state.rollSourcePages||!!state.splitSourcePages;
     els.rollBtn.hidden=hasSnapshot||state.pages.length<2;els.rollBtn.disabled=state.rolling||state.splitting||state.busy;
     const markedCount=Array.from(state.splitMarks.values()).reduce((sum,marks)=>sum+marks.length,0),currentMarks=state.splitMarks.get(state.currentId)||[];
@@ -1244,9 +1247,12 @@
     els.undoSplitMarkBtn.disabled=state.busy||state.splitting||!currentMarks.length;
     els.clearSplitMarksBtn.disabled=state.busy||state.splitting||markedCount===0;
     const hasSplitParts=!!state.splitSourcePages&&state.pages.some(page=>page.isSplitPart);
+    const canChooseDirectory=typeof window.showDirectoryPicker==='function',ipadSaveHelp=$('ipadSaveHelp');
+    ipadSaveHelp.hidden=canChooseDirectory||!isAppleTouchDevice();
     els.downloadSplitBtn.hidden=!hasSplitParts;els.downloadSplitBtn.disabled=state.busy||state.splitting;
-    els.saveSplitFolderBtn.hidden=!hasSplitParts;els.saveSplitFolderBtn.disabled=state.busy||state.splitting;els.saveSplitFolderBtn.textContent=typeof window.showDirectoryPicker==='function'?'⇩ Salvar partes em uma pasta…':'⇩ Baixar partes (ZIP)';
-    $('splitSaveNote').hidden=!hasSplitParts;$('splitSaveNote').textContent=typeof window.showDirectoryPicker==='function'?'A última pasta escolhida será sugerida na próxima vez.':'Seu navegador não permite salvar direto em pasta. Use o botão de ZIP.';
+    els.saveSplitFolderBtn.hidden=!hasSplitParts||!canChooseDirectory;els.saveSplitFolderBtn.disabled=state.busy||state.splitting;
+    els.saveSplitFolderBtn.textContent='⇩ Salvar partes em uma pasta…';
+    $('splitSaveNote').hidden=!hasSplitParts;$('splitSaveNote').textContent=canChooseDirectory?'A última pasta escolhida será sugerida na próxima vez.':isAppleTouchDevice()?'No iPad, defina uma pasta padrão em Ajustes → Apps → Safari → Downloads → Outro.':'Seu navegador não permite escolher uma pasta nesta página. Use o ZIP e salve pelo navegador.';
     els.restorePagesBtn.hidden=!hasSnapshot;
     els.downloadRollTop.hidden=!current()?.isRoll;els.downloadRollTop.disabled=state.busy||state.rolling;
     const hasEdits=allSources().some(hasImageChanges),downloadAll=$('downloadAllEditsTop');downloadAll.hidden=!hasEdits;downloadAll.disabled=state.busy;
@@ -1744,6 +1750,7 @@
     ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,entries.length,true);ev.setUint16(10,entries.length,true);ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);ev.setUint16(20,0,true);
     return new Blob([...locals,...centrals,end],{type:'application/zip'});
   }
+  function isAppleTouchDevice(){const nav=window.navigator||{};return /iPad|iPhone|iPod/i.test(nav.userAgent||'')||(nav.platform==='MacIntel'&&(nav.maxTouchPoints||0)>1)}
   function trimBlankMargins(canvas){
     const width=canvas.width,height=canvas.height;if(width<2||height<2)return canvas;
     const ctx=canvas.getContext('2d',{willReadFrequently:true}),pixels=ctx.getImageData(0,0,width,height).data;
@@ -1880,6 +1887,27 @@
     finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
     if(fallbackToZip)await exportSplitPagesZip();
   }
+  async function saveCutsToFolder(){
+    if(state.busy)return;const pages=state.pages.filter(page=>page.boxes.length);if(!pages.length)return;
+    if(typeof window.showDirectoryPicker!=='function'){await exportZip();return}
+    let directory;
+    try{const options={id:'quadro-cut-output',mode:'readwrite'};if(lastSplitDirectoryHandle)options.startIn=lastSplitDirectoryHandle;directory=await window.showDirectoryPicker(options)}
+    catch(error){if(error?.name==='AbortError')return;console.error('Não foi possível escolher a pasta dos recortes.',error);notify('Não foi possível abrir a pasta de destino.');return}
+    void rememberSplitDirectory(directory);
+    const jpgFormat={mime:'image/jpeg',extension:'jpg',label:'JPG',quality:.98},pngFormat={mime:'image/png',extension:'png'},usedNames=new Set(),total=totalPanels(),firstNumber=reservePanelNumbers(total);
+    let done=0;state.busy=true;els.progress.style.display='block';els.progressBar.style.width='0%';updateCounts();
+    try{
+      for(const page of pages)for(const box of page.boxes){
+        const number=firstNumber+done,sourceName=page.cropSnapshot?.name||page.name,polygon=box.points?.length>=3,format=polygon?pngFormat:jpgFormat,suffix=box.mode==='band'?'faixa':polygon?'poligono':'painel';
+        const stem=$('cropNameMode').value==='rename'?`${safeNameBase($('cropNamePrefix').value,'pagina')}_${String(number).padStart(6,'0')}_${suffix}`:`${String(number).padStart(6,'0')}_${fileBase(sourceName)}_${suffix}`;
+        const name=await splitNameAvailable(directory,`${stem}.${format.extension}`,usedNames),data=await cropAsImage(page,box,format),handle=await directory.getFileHandle(name,{create:true}),writer=await handle.createWritable();
+        try{await writer.write(data);await writer.close()}catch(error){try{await writer.abort()}catch{}throw error}
+        done++;els.progressBar.style.width=`${Math.round(done/total*100)}%`;
+      }
+      notify(`${done} recortes salvos. A pasta será sugerida na próxima vez.`)
+    }catch(error){console.error('Não foi possível salvar os recortes na pasta escolhida.',error);notify(`A gravação parou após ${done} de ${total} recortes: ${error?.message||'erro desconhecido'}`,6000)}
+    finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
+  }
   async function exportSplitPagesZip(){
     if(state.busy)return;
     const pages=state.pages.filter(page=>page.isSplitPart);if(!pages.length){notify('Não há partes divididas para baixar.');return}
@@ -1910,10 +1938,9 @@
       }
       saveArchive();
       if(exportedCount!==pages.length||!archives.length)throw new Error(`Foram processadas ${exportedCount} de ${pages.length} partes.`);
+      const names=archives.map((_,i)=>archives.length===1?'paginas-divididas.zip':`paginas-divididas_${String(i+1).padStart(3,'0')}.zip`);
       for(let i=0;i<archives.length;i++){
-        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');
-        a.href=url;a.download=archives.length===1?'paginas-divididas.zip':`paginas-divididas_${String(i+1).padStart(3,'0')}.zip`;
-        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');a.href=url;a.download=names[i];document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
         if(i<archives.length-1)await new Promise(resolve=>setTimeout(resolve,350));
       }
       notify(`${exportedCount} de ${pages.length} partes exportadas em ${format.label}${archives.length===1?'':' em '+archives.length+' arquivos ZIP'}.`);
@@ -1943,15 +1970,16 @@
       saveArchive();
       if(done!==total||!archives.length)throw new Error(`Apenas ${done} de ${total} recortes foram preparados.`);
       const zipBase=zipDownloadName('cropZipName','paineis-recortados').replace(/\.zip$/i,''),archiveCount=archives.length;
+      const names=archives.map((_,i)=>archiveCount===1?`${zipBase}.zip`:`${zipBase}_${String(i+1).padStart(3,'0')}.zip`);
       for(let i=0;i<archiveCount;i++){
-        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');a.href=url;a.download=archiveCount===1?`${zipBase}.zip`:`${zipBase}_${String(i+1).padStart(3,'0')}.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+        const url=URL.createObjectURL(archives[i]),a=document.createElement('a');a.href=url;a.download=names[i];document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
         if(i<archiveCount-1)await new Promise(resolve=>setTimeout(resolve,350));
       }
       notify(`${done} recortes exportados em ${Array.from(outputFormats).join(' e ')}${archiveCount===1?'':' em '+archiveCount+' arquivos ZIP'}; numeração ${String(firstNumber).padStart(6,'0')}–${String(firstNumber+done-1).padStart(6,'0')}.`);
     }catch(error){console.error('Não foi possível exportar os cortes.',error);notify(`Falha na exportação após ${done} de ${total} recortes: ${error?.message||'erro desconhecido'}`,6500)}
     finally{state.busy=false;updateCounts();setTimeout(()=>{els.progress.style.display='none';els.progressBar.style.width='0%'},1000)}
   }  $('cropNameMode').addEventListener('change',()=>syncRenameField('cropNameMode','cropNamePrefix'));
-  $('exportBtn').addEventListener('click',exportZip);$('exportTop').addEventListener('click',exportZip);els.downloadRollTop.addEventListener('click',downloadRoll);els.saveSplitFolderBtn.addEventListener('click',saveSplitPagesToFolder);els.downloadSplitBtn.addEventListener('click',exportSplitPagesZip);
+  $('exportBtn').addEventListener('click',exportZip);$('exportTop').addEventListener('click',exportZip);els.saveCutsFolderBtn.addEventListener('click',saveCutsToFolder);els.downloadRollTop.addEventListener('click',downloadRoll);els.saveSplitFolderBtn.addEventListener('click',saveSplitPagesToFolder);els.downloadSplitBtn.addEventListener('click',exportSplitPagesZip);
   setActiveTab('cuts');updateCounts();
 })();
 </script>
