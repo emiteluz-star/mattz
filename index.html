@@ -34,8 +34,9 @@
   .open-help{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#fff5d8;border-bottom:1px solid #f0d98f;color:#55420c;font-size:13px;line-height:1.45}.open-help-copy{flex:1}.open-help-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}.open-help[hidden]{display:none!important}
   .offline-setup{display:flex;align-items:center;gap:10px;padding:9px 16px;background:#eaf2ff;border-bottom:1px solid #d1e0ff;color:#203c77;font-size:12px;line-height:1.4}.offline-setup[hidden]{display:none!important}.offline-setup-text{flex:1}.offline-setup-close{border:0;background:transparent;color:inherit;font-size:20px;line-height:1;padding:2px 6px;min-width:36px;min-height:36px}
   #quickTabSwitch,.tab-strip{display:none!important}
-  .touch-shortcuts{position:fixed;top:var(--touch-shortcuts-top,50%);left:var(--touch-shortcuts-left,8px);right:auto;transform:translateY(-50%);z-index:20;display:none;grid-template-columns:1fr;gap:8px;pointer-events:none}
-  .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:none;pointer-events:auto;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;cursor:grab}
+  .touch-shortcuts{position:fixed;top:var(--touch-shortcuts-top,50%);left:var(--touch-shortcuts-left,8px);right:auto;transform:translateY(-50%);z-index:20;display:none;grid-template-columns:1fr;gap:8px;pointer-events:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .touch-shortcuts,.touch-shortcuts *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none;-webkit-user-drag:none}
+  .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:none;pointer-events:auto;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:grab}
   .touch-shortcuts.dragging .touch-bubble{cursor:grabbing;box-shadow:0 7px 20px rgba(20,35,60,.3)}
   .touch-bubble.active{background:var(--blue);border-color:var(--blue);color:#fff}
   .touch-bubble:disabled{opacity:.4;box-shadow:none}
@@ -1311,6 +1312,9 @@
   $('touchShortcuts').addEventListener('pointermove',moveTouchShortcutsDrag);
   $('touchShortcuts').addEventListener('pointerup',endTouchShortcutsDrag);
   $('touchShortcuts').addEventListener('pointercancel',endTouchShortcutsDrag);
+  $('touchShortcuts').addEventListener('selectstart',event=>event.preventDefault());
+  $('touchShortcuts').addEventListener('dragstart',event=>event.preventDefault());
+  $('touchShortcuts').addEventListener('contextmenu',event=>event.preventDefault());
   $('touchShortcuts').addEventListener('click',event=>{if(suppressTouchShortcutsClick){event.preventDefault();event.stopImmediatePropagation()}},true);
   window.addEventListener('resize',positionTouchShortcuts,{passive:true});
   window.addEventListener('scroll',positionTouchShortcuts,true);
