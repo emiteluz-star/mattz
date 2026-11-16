@@ -38,6 +38,7 @@
   .touch-shortcuts,.touch-shortcuts *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none;-webkit-user-drag:none}
   .touch-bubble{width:54px;height:54px;min-width:54px;min-height:54px;padding:0;border:1px solid #d8deea;border-radius:50%;background:rgba(255,255,255,.96);color:#303a4a;box-shadow:0 3px 12px rgba(20,35,60,.22);display:grid;place-items:center;font-size:19px;font-weight:800;line-height:1;touch-action:none;pointer-events:auto;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:grab}
   .touch-shortcuts.dragging .touch-bubble{cursor:grabbing;box-shadow:0 7px 20px rgba(20,35,60,.3)}
+  .touch-bubble{transition:transform .08s ease,box-shadow .12s ease}.touch-bubble.pressed:not(:disabled){transform:scale(.9)}.touch-shortcuts.armed .touch-bubble{box-shadow:0 0 0 3px rgba(47,99,224,.35),0 3px 12px rgba(20,35,60,.22)}
   .touch-bubble.active{background:var(--blue);border-color:var(--blue);color:#fff}
   .touch-bubble:disabled{opacity:.4;box-shadow:none}
   .touch-bubble.trash{margin-top:8px;color:#c43b42}
@@ -1285,28 +1286,39 @@
     const panelRect=panel.getBoundingClientRect(),canvasRect=els.canvasScroll.getBoundingClientRect();
     setTouchShortcutsPosition(panelRect.left+8,canvasRect.top+canvasRect.height/2);
   }
+  // Toque nos botões flutuantes: a ação dispara no fim do toque, mesmo que o dedo fique um pouco mais de tempo.
+  // Segurar (350 ms) só "arma" o arraste; o conjunto só se move se o dedo andar depois disso.
+  const TOUCH_HOLD_MS=350,TOUCH_DRAG_START_PX=6,TOUCH_TAP_SLOP_PX=18;
   function beginTouchShortcutsDrag(event){
     const button=event.target.closest('.touch-bubble');if(!button||event.button!==undefined&&event.button!==0)return;
     const bar=$('touchShortcuts'),rect=bar.getBoundingClientRect();if(!rect.width||!rect.height)return;
-    touchShortcutsDrag={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,left:rect.left,centerY:rect.top+rect.height/2,x:event.clientX,y:event.clientY,active:false,timer:0};
-    touchShortcutsDrag.timer=setTimeout(()=>{
-      if(!touchShortcutsDrag)return;
-      touchShortcutsDrag.active=true;bar.classList.add('dragging');
-      suppressTouchShortcutsClick=true;setTimeout(()=>{suppressTouchShortcutsClick=false},700);
-      setTouchShortcutsPosition(touchShortcutsDrag.left+touchShortcutsDrag.x-touchShortcutsDrag.startX,touchShortcutsDrag.centerY+touchShortcutsDrag.y-touchShortcutsDrag.startY);
-    },300);
+    if(touchShortcutsDrag)clearTimeout(touchShortcutsDrag.timer);
+    suppressTouchShortcutsClick=false;
+    touchShortcutsDrag={pointerId:event.pointerId,button,startX:event.clientX,startY:event.clientY,left:rect.left,centerY:rect.top+rect.height/2,x:event.clientX,y:event.clientY,armed:false,active:false,cancelled:false,timer:0};
+    button.classList.add('pressed');
+    touchShortcutsDrag.timer=setTimeout(()=>{if(touchShortcutsDrag&&!touchShortcutsDrag.cancelled){touchShortcutsDrag.armed=true;bar.classList.add('armed')}},TOUCH_HOLD_MS);
     try{button.setPointerCapture(event.pointerId)}catch{}
   }
   function moveTouchShortcutsDrag(event){
-    if(!touchShortcutsDrag||event.pointerId!==touchShortcutsDrag.pointerId)return;
-    touchShortcutsDrag.x=event.clientX;touchShortcutsDrag.y=event.clientY;
-    if(touchShortcutsDrag.active){event.preventDefault();setTouchShortcutsPosition(touchShortcutsDrag.left+event.clientX-touchShortcutsDrag.startX,touchShortcutsDrag.centerY+event.clientY-touchShortcutsDrag.startY)}
+    const drag=touchShortcutsDrag;if(!drag||event.pointerId!==drag.pointerId)return;
+    drag.x=event.clientX;drag.y=event.clientY;
+    const distance=Math.hypot(event.clientX-drag.startX,event.clientY-drag.startY);
+    if(!drag.active&&drag.armed&&distance>=TOUCH_DRAG_START_PX){drag.active=true;$('touchShortcuts').classList.add('dragging');drag.button.classList.remove('pressed')}
+    else if(!drag.active&&!drag.armed&&distance>TOUCH_TAP_SLOP_PX){drag.cancelled=true;clearTimeout(drag.timer);drag.button.classList.remove('pressed')}
+    if(drag.active){event.preventDefault();setTouchShortcutsPosition(drag.left+event.clientX-drag.startX,drag.centerY+event.clientY-drag.startY)}
   }
   function endTouchShortcutsDrag(event){
-    if(!touchShortcutsDrag||event.pointerId!==touchShortcutsDrag.pointerId)return;
-    clearTimeout(touchShortcutsDrag.timer);const wasDragging=touchShortcutsDrag.active;
-    if(wasDragging){const rect=$('touchShortcuts').getBoundingClientRect();savedTouchShortcutsPosition=setTouchShortcutsPosition(rect.left,rect.top+rect.height/2);$('touchShortcuts').classList.remove('dragging');try{localStorage.setItem(touchShortcutsPositionKey,JSON.stringify(savedTouchShortcutsPosition))}catch{}}
-    touchShortcutsDrag=null;
+    const drag=touchShortcutsDrag;if(!drag||event.pointerId!==drag.pointerId)return;
+    clearTimeout(drag.timer);touchShortcutsDrag=null;
+    const bar=$('touchShortcuts');bar.classList.remove('armed','dragging');drag.button.classList.remove('pressed');
+    if(drag.active){
+      const rect=bar.getBoundingClientRect();savedTouchShortcutsPosition=setTouchShortcutsPosition(rect.left,rect.top+rect.height/2);
+      try{localStorage.setItem(touchShortcutsPositionKey,JSON.stringify(savedTouchShortcutsPosition))}catch{}
+    }else if(event.type==='pointerup'&&!drag.cancelled&&!drag.button.disabled){
+      drag.button.click();
+    }
+    // O clique "de verdade" que o navegador gera depois deste toque é ignorado, para a ação não rodar duas vezes.
+    suppressTouchShortcutsClick=true;setTimeout(()=>{suppressTouchShortcutsClick=false},500);
   }
   $('touchShortcuts').addEventListener('pointerdown',beginTouchShortcutsDrag);
   $('touchShortcuts').addEventListener('pointermove',moveTouchShortcutsDrag);
@@ -1315,9 +1327,12 @@
   $('touchShortcuts').addEventListener('selectstart',event=>event.preventDefault());
   $('touchShortcuts').addEventListener('dragstart',event=>event.preventDefault());
   $('touchShortcuts').addEventListener('contextmenu',event=>event.preventDefault());
-  $('touchShortcuts').addEventListener('click',event=>{if(suppressTouchShortcutsClick){event.preventDefault();event.stopImmediatePropagation()}},true);
-  window.addEventListener('resize',positionTouchShortcuts,{passive:true});
-  window.addEventListener('scroll',positionTouchShortcuts,true);
+  $('touchShortcuts').addEventListener('click',event=>{if(suppressTouchShortcutsClick&&event.isTrusted){event.preventDefault();event.stopImmediatePropagation()}},true);
+  // Reposicionar só quando necessário e no máximo uma vez por quadro (antes rodava a cada evento de rolagem).
+  let touchShortcutsFrame=0;
+  function schedulePositionTouchShortcuts(){if(touchShortcutsFrame)return;touchShortcutsFrame=requestAnimationFrame(()=>{touchShortcutsFrame=0;positionTouchShortcuts()})}
+  window.addEventListener('resize',schedulePositionTouchShortcuts,{passive:true});
+  window.addEventListener('scroll',()=>{if(!savedTouchShortcutsPosition&&!touchShortcutsDrag)schedulePositionTouchShortcuts()},{capture:true,passive:true});
   if(window.ResizeObserver){const touchShortcutsObserver=new ResizeObserver(positionTouchShortcuts);touchShortcutsObserver.observe(document.querySelector('.canvas-panel'));touchShortcutsObserver.observe(document.querySelector('main'))}
   requestAnimationFrame(positionTouchShortcuts);
   function releasePageResources(page){
@@ -1632,7 +1647,7 @@
   function openCutTool(){setMode('rect');setActiveTab('cuts')}
   els.cutTabButton.addEventListener('click',()=>setActiveTab('cuts'));els.textTabButton.addEventListener('click',()=>setActiveTab('text'));
   $('quickTabSwitch').addEventListener('click',()=>state.activeTab==='cuts'?setActiveTab('text'):openCutTool());
-  function chooseTouchMode(mode){setActiveTab('cuts');setMode(mode)}
+  function chooseTouchMode(mode){if(state.activeTab!=='cuts')setActiveTab('cuts');setMode(mode)}
   $('touchPanelBtn').addEventListener('click',()=>chooseTouchMode('rect'));
   $('touchBandBtn').addEventListener('click',()=>chooseTouchMode('band'));
   $('touchPolygonBtn').addEventListener('click',()=>chooseTouchMode('quad'));
