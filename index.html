@@ -364,7 +364,16 @@
   }
   function restorePageAnnotations(page,recovery){
     if(!page.recoveryKey)return 0;
-    const saved=recovery.pages[page.recoveryKey];if(!saved||!Array.isArray(saved.boxes))return 0;
+    let saved=recovery.pages[page.recoveryKey];
+    // A mesma imagem pode voltar com outra data de arquivo (o iPad costuma usar a data em que ela foi escolhida).
+    // Nesse caso, reconhece pelo nome e tamanho e usa a marcação salva mais recente.
+    if(!saved){
+      const prefix=page.recoveryKey.slice(0,page.recoveryKey.lastIndexOf('|')+1);
+      for(const [key,value]of Object.entries(recovery.pages)){
+        if(key.startsWith(prefix)&&value&&Array.isArray(value.boxes)&&(!saved||(value.updatedAt||0)>(saved.updatedAt||0)))saved=value;
+      }
+    }
+    if(!saved||!Array.isArray(saved.boxes))return 0;
     page.boxes=validRecoveryBoxes(saved.boxes);return page.boxes.length;
   }
   function pageUrl(page){return page.editUrl||page.url}
